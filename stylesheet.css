@@ -1,0 +1,65 @@
+// Gist: https://gist.github.com/xhlulu/0acba79000a3fd1e6f552ed82edb8a64/
+
+body{
+    font-size: 1.5em;
+    font-family: 'Roboto', sans-serif;
+    color: #222;
+}
+.container {
+  background-color: white;
+  border-radius: 2px 2px 5px 5px;
+  font-size: 1.5rem;
+  box-shadow: rgb(240, 240, 240) 5px 5px 5px 0px;
+  border: thin solid rgb(240, 240, 240);
+  padding-bottom: 10px;
+  margin-left: auto;
+  margin-right: auto;
+
+  padding-left: 0px;
+  padding-right: 0px;
+  width: 80%;
+  max-width: none;
+
+  @media (max-width: 500px) {
+    padding-left: 10px;
+    padding-right: 10px;
+    width: 100%;
+  }
+
+  @media (max-width: 800px) {
+    padding-left: 60px;
+    padding-right: 60px;
+  }
+}
+
+.banner {
+    height: 75px;
+    background-color: #70A0AF;
+    border-radius: 5px 5px 2px 2px;
+    box-shadow: rgb(240, 240, 240) 5px 5px 5px 5px;
+    padding-top: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+
+    @media (max-width: 500px) {
+        width: 100%;
+    }
+}
+
+.banner h2{
+    color: white;
+    padding-top: 10px;
+    margin-left: 2%;
+    display: inline-block;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.banner Img{
+    position: relative;
+    float: right;
+    right: 10px;
+    height: 75px;
+}
