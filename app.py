@@ -6,8 +6,9 @@ from dash.dependencies import Input, Output, State
 import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objs as go
-
+from PIL import ImageColor
 import video_engine as rpd
+from utils import STANDARD_COLORS
 
 app = dash.Dash(__name__)
 app.scripts.config.serve_locally = True
@@ -21,7 +22,7 @@ if 'DYNO' in os.environ:
 app.layout = html.Div([
     dcc.Interval(
         id="interval-component",
-        interval=500,
+        interval=750,
         n_intervals=0
     ),
 
@@ -78,34 +79,51 @@ app.layout = html.Div([
               [State("video-player", "currTime")])
 def update_score_bar(n, current_time):
     layout = go.Layout(
-        title='Objects Detected',
-        showlegend=True,
-        margin=go.Margin(l=30, r=30, t=40, b=40)
+        title='Detection Scores (High to Low)',
+        showlegend=False,
+        margin=go.Margin(l=50, r=30, t=40, b=40),
+        yaxis={'title': 'Score'}
     )
 
     if current_time is not None:
         current_frame = round(current_time * 23.98)
-        print(current_frame)
 
         if n > 0 and current_frame > 0:
             # Select the subset of the dataset that correspond to the current frame
             frame_df = video_info_df[video_info_df["frame"] == current_frame]
 
-            print(frame_df.shape)
-
             # Select up to 5 frames with the highest scores
             frame_df = frame_df[:min(5, frame_df.shape[0])]
 
-            print(frame_df.shape)
+            # Add count to object names (e.g. person --> person 1, person --> person 2)
+            objects = frame_df["class_str"].tolist()
+            object_count_dict = {x:0 for x in set(objects)}  # Keeps count of the objects
+            objects_wc = []  # Object renamed with counts
+            for object in objects:
+                object_count_dict[object] += 1  # Increment count
+                objects_wc.append(f"{object} {object_count_dict[object]}")
+
+            # Add text information
+            y_text = [f"{round(value*100)}% confidence" for value in frame_df["score"].tolist()]
+
+            # Convert color into rgb
+            color_map = lambda class_id: str(ImageColor.getrgb(STANDARD_COLORS[class_id % len(STANDARD_COLORS)]))
+            colors = ["rgb" + color_map(class_id) for class_id in frame_df["class"].tolist()]
 
             return go.Figure(
                 data=[
                     go.Bar(
-                        x=frame_df["class_str"].tolist(),
+                        x=objects_wc,
                         y=frame_df["score"].tolist(),
-                        name="Object Scores",
+                        text=y_text,
+                        name="Detection Scores",
+                        hoverinfo="x+text",
                         marker=go.Marker(
-                            color="(26, 118, 255)"
+                            color=colors,
+                            line=dict(
+                                color='rgb(79, 85, 91)',
+                                width=1,
+                            )
                         )
                     )
                 ],
@@ -115,8 +133,8 @@ def update_score_bar(n, current_time):
     return go.Figure(
         data=[
             go.Bar(
-                x=[1, 2, 3],
-                y=[2, 3, 4],
+                x=[],
+                y=[],
                 name="Placeholder",
                 marker=go.Marker(
                     color='rgb(26, 118, 255)'
@@ -125,13 +143,6 @@ def update_score_bar(n, current_time):
         ],
         layout=layout
     )
-
-
-# @app.callback(Output("test", "children"),
-#               [Input("interval-component", "n_intervals")])
-# def test(n):
-#     print("bob")
-#     return "bob"
 
 
 # Load additional CSS to our app
