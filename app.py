@@ -14,11 +14,11 @@ app = dash.Dash(__name__)
 
 app.scripts.config.serve_locally = True
 
-# Custom Script for Heroku
-if 'DYNO' in os.environ:
-    app.scripts.append_script({
-        'external_url': 'plotly_ga.js'
-    })
+# # Custom Script for Heroku
+# if 'DYNO' in os.environ:
+#     app.scripts.append_script({
+#         'external_url': 'plotly_ga.js'
+#     })
 
 app.layout = html.Div([
     dcc.Interval(
