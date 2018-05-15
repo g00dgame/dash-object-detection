@@ -22,7 +22,7 @@ if 'DYNO' in os.environ:
 app.layout = html.Div([
     dcc.Interval(
         id="interval-component",
-        interval=750,
+        interval=800,
         n_intervals=0
     ),
 
@@ -60,6 +60,11 @@ app.layout = html.Div([
                 dcc.Graph(
                     style={'height': 300},
                     id="bar-score-graph"
+                ),
+
+                dcc.Graph(
+                    style={'height': 300},
+                    id="pie-object-count"
                 )
             ],
                 id="div-all-graphs",
@@ -122,7 +127,7 @@ def update_score_bar(n, current_time):
                             color=colors,
                             line=dict(
                                 color='rgb(79, 85, 91)',
-                                width=1,
+                                width=1
                             )
                         )
                     )
@@ -143,6 +148,37 @@ def update_score_bar(n, current_time):
         ],
         layout=layout
     )
+
+
+@app.callback(Output("pie-object-count", "figure"),
+              [Input("interval-component", "n_intervals")],
+              [State("video-player", "currTime")])
+def update_object_count_pie(n, current_time):
+    layout = go.Layout(
+        title='Object Count',
+        showlegend=True,
+        margin=go.Margin(l=50, r=30, t=40, b=40),
+        yaxis={'title': 'Score'}
+    )
+
+    if current_time is not None:
+        current_frame = round(current_time * 23.98)
+
+        if n > 0 and current_frame > 0:
+            # Select the subset of the dataset that correspond to the current frame
+            frame_df = video_info_df[video_info_df["frame"] == current_frame]
+
+            # Get the count of each object class
+            class_counts = frame_df["class_str"].value_counts()
+
+            classes = class_counts.index.tolist()  # List of each class
+            counts = class_counts.tolist()  # List of each count
+
+            trace = go.Pie(labels=classes, values=counts)
+
+            return go.Figure(data=[trace], layout=layout)
+
+    return go.Figure()
 
 
 # Load additional CSS to our app
