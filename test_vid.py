@@ -28,6 +28,12 @@ df = pd.read_csv('CleanData.csv') #Reads CSV Data
 
 
 app.layout = html.Div(children=[
+    dcc.Interval(
+        id="interval-component",
+        interval=200,
+        n_intervals=0
+    ),
+
     html.H1(children='the best fucking data analyzer ever',
             style={
                 'textAlign': 'center'
@@ -40,7 +46,7 @@ app.layout = html.Div(children=[
    #                 }),
     html.Div(children=rpd.my_Player(
         id = 'video_player',
-        url = 'http://127.0.0.1:8080/testvideo.mp4',
+        url = 'https://www.youtube.com/watch?v=g9S5GndUhko',
         width = 900,
         height = 720,
         controls = True,
@@ -58,8 +64,9 @@ dcc.Slider(id = 'time-slider', value=0, min=0, max=120, step=0.00001,
 
 @app.callback( ##Graph 1
     dash.dependencies.Output('sens1', 'figure'),
-    [dash.dependencies.Input('video_player', 'currTime')])
-def update_time(newtime):
+    [dash.dependencies.Input('interval-component', 'n_intervals')],
+    [dash.dependencies.State('video_player', 'currTime')])
+def update_time(n, newtime):
     X.append(newtime)
     data = go.Scatter(
                 x = df['timestamp'],
