@@ -11,13 +11,14 @@ import video_engine as rpd
 from utils import STANDARD_COLORS
 
 app = dash.Dash(__name__)
-app.scripts.config.serve_locally = True
 
 # Custom Script for Heroku
 if 'DYNO' in os.environ:
     app.scripts.append_script({
         'external_url': 'https://cdn.rawgit.com/chriddyp/ca0d8f02a1659981a0ea7f013a378bbd/raw/e79f3f789517deec58f41251f7dbb6bee72c44ab/plotly_ga.js'
     })
+
+app.scripts.config.serve_locally = True
 
 app.layout = html.Div([
     dcc.Interval(
