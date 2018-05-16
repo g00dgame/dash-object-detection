@@ -15,11 +15,12 @@ server = app.server
 
 # Custom Script for Heroku
 if 'DYNO' in os.environ:
+    app.scripts.config.serve_locally = False
     app.scripts.append_script({
-        'external_url': 'plotly_ga.js'
+        'external_url': 'https://cdn.rawgit.com/chriddyp/ca0d8f02a1659981a0ea7f013a378bbd/raw/e79f3f789517deec58f41251f7dbb6bee72c44ab/plotly_ga.js'
     })
 
-app.scripts.config.serve_locally = True  # TODO: Fix error where serve_locally would be true, but DYNO can't be run
+app.scripts.config.serve_locally = True
 
 app.layout = html.Div([
     dcc.Interval(
@@ -44,7 +45,7 @@ app.layout = html.Div([
     # Body
     html.Div([
         html.Div([
-            html.Div(
+            html.Div([
                 rpd.my_Player(
                     id='video-player',
                     url='https://www.youtube.com/watch?v=g9S5GndUhko',
@@ -55,6 +56,16 @@ app.layout = html.Div([
                     seekTo=0,
                     volume=1
                 ),
+
+                dcc.RadioItems(
+                    options=[
+                        {'label': 'Visual Mode', 'value': 'visual'},
+                        {'label': 'Detection Mode', 'value': 'detection'}
+                    ],
+                    value='detection',
+                    labelStyle={'display': 'inline-block'}
+                )
+            ],
                 className="six columns"
             ),
 
@@ -104,7 +115,7 @@ def update_score_bar(n, current_time):
 
             # Add count to object names (e.g. person --> person 1, person --> person 2)
             objects = frame_df["class_str"].tolist()
-            object_count_dict = {x:0 for x in set(objects)}  # Keeps count of the objects
+            object_count_dict = {x: 0 for x in set(objects)}  # Keeps count of the objects
             objects_wc = []  # Object renamed with counts
             for object in objects:
                 object_count_dict[object] += 1  # Increment count
@@ -118,19 +129,19 @@ def update_score_bar(n, current_time):
             colors = ["rgb" + color_map(class_id) for class_id in frame_df["class"].tolist()]
 
             bar = go.Bar(
-                        x=objects_wc,
-                        y=frame_df["score"].tolist(),
-                        text=y_text,
-                        name="Detection Scores",
-                        hoverinfo="x+text",
-                        marker=go.Marker(
-                            color=colors,
-                            line=dict(
-                                color='rgb(79, 85, 91)',
-                                width=1
-                            )
-                        )
+                x=objects_wc,
+                y=frame_df["score"].tolist(),
+                text=y_text,
+                name="Detection Scores",
+                hoverinfo="x+text",
+                marker=go.Marker(
+                    color=colors,
+                    line=dict(
+                        color='rgb(79, 85, 91)',
+                        width=1
                     )
+                )
+            )
 
             return go.Figure(data=[bar], layout=layout)
 
