@@ -23,12 +23,6 @@ if 'DYNO' in os.environ:
 app.scripts.config.serve_locally = True
 
 app.layout = html.Div([
-    dcc.Interval(
-        id="interval-component",
-        interval=800,
-        n_intervals=0
-    ),
-
     # Banner display
     html.Div([
         html.H2(
@@ -70,6 +64,12 @@ app.layout = html.Div([
             ),
 
             html.Div([
+                dcc.Interval(
+                    id="interval-component",
+                    interval=800,
+                    n_intervals=0
+                ),
+
                 dcc.Graph(
                     style={'height': 300},
                     id="bar-score-graph"
@@ -202,10 +202,9 @@ def update_object_count_pie(n, current_time):
 # Load additional CSS to our app
 external_css = [
     "https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css",  # Normalize the CSS
-    "https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css",  # Bootstrap
     "https://fonts.googleapis.com/css?family=Open+Sans|Roboto"  # Fonts
     "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css",
-    "https://rawgit.com/xhlulu/Video-Engine-Dash/master/stylesheet.css"
+    "https://rawgit.com/xhlulu/dash-object-detection/master/stylesheet.css"
 ]
 
 for css in external_css:

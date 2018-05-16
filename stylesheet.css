@@ -1,6 +1,6 @@
 /*
 Gist: https://gist.github.com/xhlulu/0acba79000a3fd1e6f552ed82edb8a64/
-Rawgit: https://rawgit.com/xhlulu/Video-Engine-Dash/master/stylesheet.css
+Rawgit: https://rawgit.com/xhlulu/dash-object-detection/master/stylesheet.css
  */
 
 
@@ -41,15 +41,17 @@ Rawgit: https://rawgit.com/xhlulu/Video-Engine-Dash/master/stylesheet.css
 
 .banner h2{
     color: white;
-    margin-left: 2%;
+    margin-left: 1.5%;
     display: inline-block;
     font-family: 'Open Sans', sans-serif;
+    font-size:4rem;
+    line-height:1;
 }
 
 .banner Img{
     position: relative;
     float: right;
-    right: 10px;
+    right: 1.5%;
     height: 75px;
 }
 
