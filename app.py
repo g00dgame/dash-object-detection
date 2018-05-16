@@ -11,14 +11,15 @@ import video_engine as rpd
 from utils import STANDARD_COLORS
 
 app = dash.Dash(__name__)
+server = app.server
 
-app.scripts.config.serve_locally = True
+# Custom Script for Heroku
+if 'DYNO' in os.environ:
+    app.scripts.append_script({
+        'external_url': 'plotly_ga.js'
+    })
 
-# # Custom Script for Heroku
-# if 'DYNO' in os.environ:
-#     app.scripts.append_script({
-#         'external_url': 'plotly_ga.js'
-#     })
+app.scripts.config.serve_locally = True  # TODO: Fix error where serve_locally would be true, but DYNO can't be run
 
 app.layout = html.Div([
     dcc.Interval(
@@ -116,9 +117,7 @@ def update_score_bar(n, current_time):
             color_map = lambda class_id: str(ImageColor.getrgb(STANDARD_COLORS[class_id % len(STANDARD_COLORS)]))
             colors = ["rgb" + color_map(class_id) for class_id in frame_df["class"].tolist()]
 
-            return go.Figure(
-                data=[
-                    go.Bar(
+            bar = go.Bar(
                         x=objects_wc,
                         y=frame_df["score"].tolist(),
                         text=y_text,
@@ -132,9 +131,8 @@ def update_score_bar(n, current_time):
                             )
                         )
                     )
-                ],
-                layout=layout
-            )
+
+            return go.Figure(data=[bar], layout=layout)
 
     return go.Figure(
         data=[
@@ -175,9 +173,17 @@ def update_object_count_pie(n, current_time):
             classes = class_counts.index.tolist()  # List of each class
             counts = class_counts.tolist()  # List of each count
 
-            trace = go.Pie(labels=classes, values=counts)
+            text = [f"{count} detected" for count in counts]
 
-            return go.Figure(data=[trace], layout=layout)
+            pie = go.Pie(
+                labels=classes,
+                values=counts,
+                text=text,
+                hoverinfo="text+percent",
+                textinfo="label+percent"
+            )
+
+            return go.Figure(data=[pie], layout=layout)
 
     return go.Figure()
 
