@@ -28,7 +28,7 @@ Rawgit: https://rawgit.com/xhlulu/dash-object-detection/master/stylesheet.css
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 .banner {
     height: 75px;
-    background-color: #70A0AF;
+    background-color: #414073;
     border-radius: 5px 5px 2px 2px;
     box-shadow: rgb(240, 240, 240) 5px 5px 5px 0px;
     padding-top: 0px;
@@ -59,19 +59,19 @@ line-height:1;
 /* Grid
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 .container {
-    position: relative;
-    background-color: white;
-    border-radius: 2px 2px 5px 5px;
-    font-size: 1.5rem;
-    box-shadow: rgb(240, 240, 240) 5px 5px 5px 0px;
-    border: thin solid rgb(240, 240, 240);
-    margin-left: auto;
-    margin-right: auto;
-
-    padding: 8px;
-    width: 80%;
-    max-width: none;
-    box-sizing: border-box;
+  position: relative;
+  background-color: white;
+  border-radius: 2px 2px 5px 5px;
+  font-size: 1.5rem;
+  box-shadow: rgb(240, 240, 240) 5px 5px 5px 0px;
+  border: thin solid rgb(240, 240, 240);
+  margin-left: auto;
+  margin-right: auto;
+  color: #302F54;
+  padding: 8px;
+  width: 80%;
+  max-width: none;
+  box-sizing: border-box;
 }
 
 .column,
