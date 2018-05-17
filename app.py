@@ -26,6 +26,44 @@ if 'DYNO' in os.environ:
 app.scripts.config.serve_locally = True
 app.config['suppress_callback_exceptions'] = True
 
+
+def load_data(path):
+    """Load data about a specific footage (given by the path). It returns a dictionary of useful variables such as
+    the dataframe containing all the detection and bounds localization, the number of classes inside that footage,
+    the matrix of all the classes in string, the given class with padding, and the root of the number of classes,
+    rounded."""
+
+    # Load the dataframe containing all the processed object detections inside the video
+    video_info_df = pd.read_csv(path)
+
+    # The list of classes, and the number of classes
+    classes_list = video_info_df["class_str"].value_counts().index.tolist()
+    n_classes = len(classes_list)
+
+    # Gets the smallest value needed to add to the end of the classes list to get a square matrix
+    root_round = round(np.sqrt(len(classes_list)))
+    total_size = root_round ** 2
+    padding_value = int(total_size - n_classes)
+    classes_padded = np.pad(classes_list, (0, padding_value), mode='constant')
+
+    # The padded matrix containing all the classes inside a matrix
+    classes_matrix = np.reshape(classes_padded, (int(root_round), int(root_round)))
+
+    # Flip it for better looks
+    classes_matrix = np.flip(classes_matrix, axis=0)
+
+    data_dict = {
+        "video_info_df": video_info_df,
+        "n_classes": n_classes,
+        "classes_matrix": classes_matrix,
+        "classes_padded": classes_padded,
+        "root_round": root_round
+    }
+
+    return data_dict
+
+
+######################################### MAIN APP #########################################
 app.layout = html.Div([
     # Banner display
     html.Div([
@@ -45,20 +83,6 @@ app.layout = html.Div([
         html.Div([
             html.Div([
                 html.Div([
-                    dcc.Dropdown(
-                        options=[
-                            {'label': 'Visual Mode', 'value': 'visual'},
-                            {'label': 'Detection Mode', 'value': 'detection'}
-                        ],
-                        value='visual',
-                        id="dropdown-mode-selection",
-                        searchable=False,
-                        clearable=False
-                    )
-                ],
-                    style={'margin-bottom': '20px'}
-                ),
-                html.Div([
                     rpd.my_Player(
                         id='video-display',
                         url='https://www.youtube.com/watch?v=g9S5GndUhko',
@@ -70,7 +94,70 @@ app.layout = html.Div([
                         volume=1
                     )
                 ],
-                    style={'color': 'rgb(255, 255, 255)'}
+                    id='div-video-player',
+                    style={
+                        'color': 'rgb(255, 255, 255)',
+                        'margin-bottom': '-30px'
+                    }
+                ),
+
+                html.Div([
+                    "Footage Selection:",
+                    dcc.Dropdown(
+                        options=[
+                            {'label': 'James Bond', 'value': 'james_bond'}
+                        ],
+                        value='james_bond',
+                        id="dropdown-footage-selection",
+                        clearable=False
+                    )
+                ],
+                    style={'margin': '15px 20px 15px 20px'}  # top right bottom left
+                ),
+
+                html.Div([
+                    "Video Display Mode:",
+                    dcc.Dropdown(
+                        options=[
+                            {'label': 'Regular Display', 'value': 'regular'},
+                            {'label': 'Display with Bounding Boxes', 'value': 'bounding_box'},
+                        ],
+                        value='regular',
+                        id="dropdown-video-display-mode",
+                        searchable=False,
+                        clearable=False
+                    )
+                ],
+                    style={'margin': '15px 20px 15px 20px'}  # top right bottom left
+                ),
+
+                html.Div([
+                    "Graph View Mode:",
+                    dcc.Dropdown(
+                        options=[
+                            {'label': 'Visual Mode', 'value': 'visual'},
+                            {'label': 'Detection Mode', 'value': 'detection'}
+                        ],
+                        value='visual',
+                        id="dropdown-graph-view-mode",
+                        searchable=False,
+                        clearable=False
+                    )
+                ],
+                    style={'margin': '15px 20px 15px 20px'}  # top right bottom left
+                ),
+
+                html.Div([
+                    "Minimum Confidence Threshold:",
+                    dcc.Slider(
+                        min=20,
+                        max=80,
+                        marks={i: f'{i}%' for i in range(20, 81, 10)},
+                        value=50,
+                        id='slider-minimum-confidence-threshold'
+                    )
+                ],
+                    style={'margin': '15px 25px 15px 25px'}  # top right bottom left
                 ),
             ],
                 className="six columns"
@@ -88,8 +175,17 @@ app.layout = html.Div([
 ])
 
 
+######################################### FOOTAGE SELECTION #########################################
+@app.callback(Output("video-player", "url"),
+              [Input('dropdown-footage-selection', 'value'),
+               Input('dropdown-video-display-mode', 'value')])
+def select_footage(footage, display_mode):
+    return url_dict[display_mode][footage]
+
+
+######################################### GRAPH VIEW SELECTION #########################################
 @app.callback(Output("div-visual-mode", "children"),
-              [Input("dropdown-mode-selection", "value")])
+              [Input("dropdown-graph-view-mode", "value")])
 def update_visual_mode(value):
     if value == "visual":
         return [
@@ -115,7 +211,7 @@ def update_visual_mode(value):
 
 
 @app.callback(Output("div-detection-mode", "children"),
-              [Input("dropdown-mode-selection", "value")])
+              [Input("dropdown-graph-view-mode", "value")])
 def update_detection_mode(value):
     if value == "detection":
         return [
@@ -134,6 +230,7 @@ def update_detection_mode(value):
         return []
 
 
+######################################### UPDATING FIGURES #########################################
 @app.callback(Output("bar-score-graph", "figure"),
               [Input("interval-detection-mode", "n_intervals")],
               [State("video-display", "currTime")])
@@ -149,6 +246,8 @@ def update_score_bar(n, current_time):
         current_frame = round(current_time * 23.98)
 
         if n > 0 and current_frame > 0:
+            video_info_df = data_dict["video_info_df"]
+
             # Select the subset of the dataset that correspond to the current frame
             frame_df = video_info_df[video_info_df["frame"] == current_frame]
 
@@ -204,6 +303,8 @@ def update_object_count_pie(n, current_time):
         current_frame = round(current_time * 23.98)
 
         if n > 0 and current_frame > 0:
+            video_info_df = data_dict["video_info_df"]
+
             # Select the subset of the dataset that correspond to the current frame
             frame_df = video_info_df[video_info_df["frame"] == current_frame]
 
@@ -241,6 +342,12 @@ def update_heatmap_confidence(n, current_time):
         current_frame = round(current_time * 23.98)
 
         if n > 0 and current_frame > 0:
+            # Load variables from the data dictionary
+            video_info_df = data_dict["video_info_df"]
+            classes_padded = data_dict["classes_padded"]
+            root_round = data_dict["root_round"]
+            classes_matrix = data_dict["classes_matrix"]
+
             # Select the subset of the dataset that correspond to the current frame
             frame_df = video_info_df[video_info_df["frame"] == current_frame]
 
@@ -271,8 +378,6 @@ def update_heatmap_confidence(n, current_time):
             hover_text = [f"{score * 100:.2f}% confidence" for score in score_list]
             hover_text = np.reshape(hover_text, (-1, int(root_round)))
             hover_text = np.flip(hover_text, axis=0)
-
-
 
             pt = ff.create_annotated_heatmap(
                 score_matrix,
@@ -305,27 +410,21 @@ for css in external_css:
 
 
 @app.server.before_first_request
-def load_data():
-    global video_info_df, n_classes, classes_matrix, classes_padded, root_round
+def load_all_footages():
+    global data_dict, url_dict
 
-    # Load the dataframe containing all the processed object detections inside the video
-    video_info_df = pd.read_csv("data/video_info.csv")
+    # Load the dictionary containing all the variables needed for analysis
+    data_dict = load_data("data/video_info.csv")
 
-    # The list of classes, and the number of classes
-    classes_list = video_info_df["class_str"].value_counts().index.tolist()
-    n_classes = len(classes_list)
+    url_dict = {
+        'regular': {
+            'james_bond': 'https://www.youtube.com/watch?v=g9S5GndUhko'
+        },
 
-    # Gets the smallest value needed to add to the end of the classes list to get a square matrix
-    root_round = round(np.sqrt(len(classes_list)))
-    total_size = root_round ** 2
-    padding_value = int(total_size - n_classes)
-    classes_padded = np.pad(classes_list, (0, padding_value), mode='constant')
-
-    # The padded matrix containing all the classes inside a matrix
-    classes_matrix = np.reshape(classes_padded, (int(root_round), int(root_round)))
-
-    # Flip it for better looks
-    classes_matrix = np.flip(classes_matrix, axis=0)
+        'bounding_box': {
+            'james_bond': 'https://www.youtube.com/watch?v=jygRWM3nIA0'
+        }
+    }
 
 
 # Running the server
