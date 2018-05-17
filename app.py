@@ -29,7 +29,7 @@ app.layout = html.Div([
     # Banner display
     html.Div([
         html.H2(
-            'App Name',
+            'Object Detection Dashboard',
             id='title'
         ),
         html.Img(
@@ -49,8 +49,10 @@ app.layout = html.Div([
                             {'label': 'Visual Mode', 'value': 'visual'},
                             {'label': 'Detection Mode', 'value': 'detection'}
                         ],
-                        value='detection',
-                        id="dropdown-mode-selection"
+                        value='visual',
+                        id="dropdown-mode-selection",
+                        searchable=False,
+                        clearable=False
                     )
                 ],
                     style={'margin-bottom': '20px'}
@@ -194,7 +196,7 @@ def update_object_count_pie(n, current_time):
     layout = go.Layout(
         title='Object Count',
         showlegend=True,
-        margin=go.Margin(l=50, r=30, t=40, b=40)
+        margin=go.Margin(l=50, r=30, t=30, b=40)
     )
 
     if current_time is not None:
@@ -229,6 +231,11 @@ def update_object_count_pie(n, current_time):
               [Input("interval-visual-mode", "n_intervals")],
               [State("video-display", "currTime")])
 def update_heatmap_confidence(n, current_time):
+    layout = go.Layout(
+        title="Confidence Heatmap",
+        margin=go.Margin(l=20, r=20, t=57, b=30)
+    )
+
     if current_time is not None:
         current_frame = round(current_time * 23.98)
 
@@ -252,8 +259,6 @@ def update_heatmap_confidence(n, current_time):
             score_matrix = np.reshape(score_list, (-1, int(root_round)))
             score_matrix = np.flip(score_matrix, axis=0)
 
-            print(frame_no_dup.shape)
-
             # We set the color scale to white if there's nothing in the frame_no_dup
             if frame_no_dup.shape != (0, 1):
                 colorscale = [[0, '#ffffff'], [1, '#f71111']]
@@ -266,6 +271,8 @@ def update_heatmap_confidence(n, current_time):
             hover_text = np.reshape(hover_text, (-1, int(root_round)))
             hover_text = np.flip(hover_text, axis=0)
 
+
+
             pt = ff.create_annotated_heatmap(
                 score_matrix,
                 annotation_text=classes_matrix,
@@ -275,11 +282,13 @@ def update_heatmap_confidence(n, current_time):
                 text=hover_text
             )
 
-            pt.layout.title = "Confidence Heatmap"
-            pt.layout.margin = go.Margin(l=20, r=20, t=80, b=30)
+            pt.layout.title = layout.title
+            pt.layout.margin = layout.margin
+
             return pt
 
-    return go.Figure()  # Returns empty pie chart
+    # Returns empty figure
+    return go.Figure(data=[go.Pie()], layout=layout)
 
 
 # Load additional CSS to our app
