@@ -135,7 +135,7 @@ def update_score_bar(n, current_time):
     layout = go.Layout(
         title='Detection Scores (High to Low)',
         showlegend=False,
-        margin=go.Margin(l=50, r=30, t=40, b=40),
+        margin=go.Margin(l=70, r=40, t=50, b=30),
         yaxis={'title': 'Score'}
     )
 
