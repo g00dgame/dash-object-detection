@@ -13,6 +13,8 @@ import plotly.figure_factory as ff
 import video_engine as rpd
 from utils import STANDARD_COLORS
 
+DEBUG = True
+
 app = dash.Dash(__name__)
 server = app.server
 
@@ -40,8 +42,9 @@ def load_data(path):
     classes_list = video_info_df["class_str"].value_counts().index.tolist()
     n_classes = len(classes_list)
 
+
     # Gets the smallest value needed to add to the end of the classes list to get a square matrix
-    root_round = round(np.sqrt(len(classes_list)))
+    root_round = np.ceil(np.sqrt(len(classes_list)))
     total_size = root_round ** 2
     padding_value = int(total_size - n_classes)
     classes_padded = np.pad(classes_list, (0, padding_value), mode='constant')
@@ -59,6 +62,9 @@ def load_data(path):
         "classes_padded": classes_padded,
         "root_round": root_round
     }
+
+    if DEBUG:
+        print(f'{path} loaded.')
 
     return data_dict
 
@@ -83,16 +89,7 @@ app.layout = html.Div([
         html.Div([
             html.Div([
                 html.Div([
-                    rpd.my_Player(
-                        id='video-display',
-                        url='https://www.youtube.com/watch?v=g9S5GndUhko',
-                        width='100%',
-                        height='50vh',
-                        controls=True,
-                        playing=False,
-                        seekTo=0,
-                        volume=1
-                    )
+                    rpd.my_Player()
                 ],
                     id='div-video-player',
                     style={
@@ -105,7 +102,10 @@ app.layout = html.Div([
                     "Footage Selection:",
                     dcc.Dropdown(
                         options=[
-                            {'label': 'James Bond', 'value': 'james_bond'}
+                            {'label': 'James Bond', 'value': 'james_bond'},
+                            {'label': 'Lion fighting Zebras', 'value': 'zebra'},
+                            {'label': 'Man driving expensive car', 'value': 'car_footage'},
+                            {'label': 'Drone recording of car festival', 'value': 'car_show_drone'}
                         ],
                         value='james_bond',
                         id="dropdown-footage-selection",
@@ -176,11 +176,24 @@ app.layout = html.Div([
 
 
 ######################################### FOOTAGE SELECTION #########################################
-@app.callback(Output("video-player", "url"),
+@app.callback(Output("div-video-player", "children"),
               [Input('dropdown-footage-selection', 'value'),
                Input('dropdown-video-display-mode', 'value')])
 def select_footage(footage, display_mode):
-    return url_dict[display_mode][footage]
+    url = url_dict[display_mode][footage]  # Find desired footage
+
+    return [
+        rpd.my_Player(
+            id='video-display',
+            url=url,
+            width='100%',
+            height='50vh',
+            controls=True,
+            playing=False,
+            seekTo=0,
+            volume=1
+        )
+    ]
 
 
 ######################################### GRAPH VIEW SELECTION #########################################
@@ -233,8 +246,9 @@ def update_detection_mode(value):
 ######################################### UPDATING FIGURES #########################################
 @app.callback(Output("bar-score-graph", "figure"),
               [Input("interval-detection-mode", "n_intervals")],
-              [State("video-display", "currTime")])
-def update_score_bar(n, current_time):
+              [State("video-display", "currTime"),
+               State('dropdown-footage-selection', 'value')])
+def update_score_bar(n, current_time, footage):
     layout = go.Layout(
         title='Detection Score of Most Probable Objects',
         showlegend=False,
@@ -246,7 +260,7 @@ def update_score_bar(n, current_time):
         current_frame = round(current_time * 23.98)
 
         if n > 0 and current_frame > 0:
-            video_info_df = data_dict["video_info_df"]
+            video_info_df = data_dict[footage]["video_info_df"]
 
             # Select the subset of the dataset that correspond to the current frame
             frame_df = video_info_df[video_info_df["frame"] == current_frame]
@@ -291,8 +305,9 @@ def update_score_bar(n, current_time):
 
 @app.callback(Output("pie-object-count", "figure"),
               [Input("interval-visual-mode", "n_intervals")],
-              [State("video-display", "currTime")])
-def update_object_count_pie(n, current_time):
+              [State("video-display", "currTime"),
+               State('dropdown-footage-selection', 'value')])
+def update_object_count_pie(n, current_time, footage):
     layout = go.Layout(
         title='Object Count',
         showlegend=True,
@@ -303,7 +318,7 @@ def update_object_count_pie(n, current_time):
         current_frame = round(current_time * 23.98)
 
         if n > 0 and current_frame > 0:
-            video_info_df = data_dict["video_info_df"]
+            video_info_df = data_dict[footage]["video_info_df"]
 
             # Select the subset of the dataset that correspond to the current frame
             frame_df = video_info_df[video_info_df["frame"] == current_frame]
@@ -331,8 +346,9 @@ def update_object_count_pie(n, current_time):
 
 @app.callback(Output("heatmap-confidence", "figure"),
               [Input("interval-visual-mode", "n_intervals")],
-              [State("video-display", "currTime")])
-def update_heatmap_confidence(n, current_time):
+              [State("video-display", "currTime"),
+               State('dropdown-footage-selection', 'value')])
+def update_heatmap_confidence(n, current_time, footage):
     layout = go.Layout(
         title="Confidence Level of Object Presence",
         margin=go.Margin(l=20, r=20, t=57, b=30)
@@ -343,10 +359,10 @@ def update_heatmap_confidence(n, current_time):
 
         if n > 0 and current_frame > 0:
             # Load variables from the data dictionary
-            video_info_df = data_dict["video_info_df"]
-            classes_padded = data_dict["classes_padded"]
-            root_round = data_dict["root_round"]
-            classes_matrix = data_dict["classes_matrix"]
+            video_info_df = data_dict[footage]["video_info_df"]
+            classes_padded = data_dict[footage]["classes_padded"]
+            root_round = data_dict[footage]["root_round"]
+            classes_matrix = data_dict[footage]["classes_matrix"]
 
             # Select the subset of the dataset that correspond to the current frame
             frame_df = video_info_df[video_info_df["frame"] == current_frame]
@@ -414,19 +430,30 @@ def load_all_footages():
     global data_dict, url_dict
 
     # Load the dictionary containing all the variables needed for analysis
-    data_dict = load_data("data/video_info.csv")
+    data_dict = {
+        'james_bond': load_data("data/video_info.csv"),
+        'zebra': load_data("data/Zebra_object_data.csv"),
+        'car_show_drone': load_data("data/CarShowDrone_object_data.csv"),
+        'car_footage': load_data("data/CarFootage_object_data.csv")
+    }
 
     url_dict = {
         'regular': {
-            'james_bond': 'https://www.youtube.com/watch?v=g9S5GndUhko'
+            'james_bond': 'https://www.youtube.com/watch?v=g9S5GndUhko',
+            'zebra': 'https://www.youtube.com/watch?v=0o0ywjLaQGo',
+            'car_show_drone': 'https://www.youtube.com/watch?v=CDf0lVw9fUY',
+            'car_footage': 'https://www.youtube.com/watch?v=UWVTnsaVO2U'
         },
 
         'bounding_box': {
-            'james_bond': 'https://www.youtube.com/watch?v=jygRWM3nIA0'
+            'james_bond': 'https://www.youtube.com/watch?v=g9S5GndUhko',
+            'zebra': 'https://www.youtube.com/watch?v=G2pbZgyWQ5E',
+            'car_show_drone': 'https://www.youtube.com/watch?v=9F5FdcVmLOY',
+            'car_footage': 'https://www.youtube.com/watch?v=EhnNosq1Lrc'
         }
     }
 
 
 # Running the server
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=DEBUG)
