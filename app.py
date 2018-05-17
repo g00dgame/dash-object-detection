@@ -1,14 +1,15 @@
-import plotly.figure_factory as ff
-
 import os
-import pandas as pd
-import numpy as np
+
 import dash
-from dash.dependencies import Input, Output, State
 import dash_core_components as dcc
 import dash_html_components as html
-import plotly.graph_objs as go
+from dash.dependencies import Input, Output, State
+import numpy as np
+import pandas as pd
 from PIL import ImageColor
+import plotly.graph_objs as go
+import plotly.figure_factory as ff
+
 import video_engine as rpd
 from utils import STANDARD_COLORS
 
@@ -138,7 +139,7 @@ def update_detection_mode(value):
               [State("video-display", "currTime")])
 def update_score_bar(n, current_time):
     layout = go.Layout(
-        title='Detection Scores (High to Low)',
+        title='Detection Score of Most Probable Objects',
         showlegend=False,
         margin=go.Margin(l=70, r=40, t=50, b=30),
         yaxis={'title': 'Score'}
@@ -232,7 +233,7 @@ def update_object_count_pie(n, current_time):
               [State("video-display", "currTime")])
 def update_heatmap_confidence(n, current_time):
     layout = go.Layout(
-        title="Confidence Heatmap",
+        title="Confidence Level of Object Presence",
         margin=go.Margin(l=20, r=20, t=57, b=30)
     )
 
