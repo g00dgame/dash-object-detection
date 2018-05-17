@@ -94,7 +94,7 @@ def update_visual_mode(value):
             ),
 
             dcc.Graph(
-                style={'height': 600},
+                style={'height': 500},
                 id="heatmap-confidence"
             ),
 
@@ -257,7 +257,7 @@ def update_heatmap_confidence(n, current_time):
                 colorscale = [[0, '#ffffff'], [1, '#f71111']]
                 font_colors = ['#3c3636', '#efecee']
             else:
-                colorscale = [[0, '#ffffff'], [1,'#ffffff']]
+                colorscale = [[0, '#ffffff'], [1, '#ffffff']]
                 font_colors = ['#3c3636']
 
             hover_text = [f"{score * 100:.2f}% confidence" for score in score_list]
@@ -274,6 +274,7 @@ def update_heatmap_confidence(n, current_time):
             )
 
             pt.layout.title = "Confidence Heatmap"
+            pt.layout.margin = go.Margin(l=20, r=20, t=80, b=30)
             return pt
 
     return go.Figure()  # Returns empty pie chart
