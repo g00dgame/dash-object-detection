@@ -147,6 +147,7 @@ app.layout = html.Div([
                     style={'margin': '15px 20px 15px 20px'}  # top right bottom left
                 ),
 
+                # TODO: Make Threshold functional
                 html.Div([
                     "Minimum Confidence Threshold:",
                     dcc.Slider(
