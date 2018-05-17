@@ -55,16 +55,19 @@ app.layout = html.Div([
                 ],
                     style={'margin-bottom': '20px'}
                 ),
-
-                rpd.my_Player(
-                    id='video-display',
-                    url='https://www.youtube.com/watch?v=g9S5GndUhko',
-                    width='100%',
-                    height='50vh',
-                    controls=True,
-                    playing=False,
-                    seekTo=0,
-                    volume=1
+                html.Div([
+                    rpd.my_Player(
+                        id='video-display',
+                        url='https://www.youtube.com/watch?v=g9S5GndUhko',
+                        width='100%',
+                        height='50vh',
+                        controls=True,
+                        playing=False,
+                        seekTo=0,
+                        volume=1
+                    )
+                ],
+                    style={'color': 'rgb(255, 255, 255)'}
                 ),
             ],
                 className="six columns"
@@ -94,7 +97,7 @@ def update_visual_mode(value):
             ),
 
             dcc.Graph(
-                style={'height': 500},
+                style={'height': 400},
                 id="heatmap-confidence"
             ),
 
@@ -226,7 +229,6 @@ def update_object_count_pie(n, current_time):
               [Input("interval-visual-mode", "n_intervals")],
               [State("video-display", "currTime")])
 def update_heatmap_confidence(n, current_time):
-
     if current_time is not None:
         current_frame = round(current_time * 23.98)
 
