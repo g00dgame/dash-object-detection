@@ -11,7 +11,7 @@ import plotly.graph_objs as go
 import plotly.figure_factory as ff
 
 import video_engine as rpd
-from utils import STANDARD_COLORS
+from utils.coco_colors import STANDARD_COLORS
 
 DEBUG = True
 
@@ -408,7 +408,7 @@ def update_heatmap_confidence(n, current_time, footage, threshold):
             frame_df = video_info_df[video_info_df["frame"] == current_frame]
 
             # Select only the frames above the threshold
-            threshold_dec = threshold / 100  # Threshold in decimal
+            threshold_dec = threshold / 100
             frame_df = frame_df[frame_df["score"] > threshold_dec]
 
             # Remove duplicate, keep the top result
