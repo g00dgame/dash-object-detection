@@ -42,7 +42,6 @@ def load_data(path):
     classes_list = video_info_df["class_str"].value_counts().index.tolist()
     n_classes = len(classes_list)
 
-
     # Gets the smallest value needed to add to the end of the classes list to get a square matrix
     root_round = np.ceil(np.sqrt(len(classes_list)))
     total_size = root_round ** 2
@@ -147,7 +146,6 @@ app.layout = html.Div([
                     style={'margin': '15px 20px 15px 20px'}  # top right bottom left
                 ),
 
-                # TODO: Make Threshold functional
                 html.Div([
                     "Minimum Confidence Threshold:",
                     dcc.Slider(
@@ -158,7 +156,7 @@ app.layout = html.Div([
                         id='slider-minimum-confidence-threshold'
                     )
                 ],
-                    style={'margin': '15px 25px 15px 25px'}  # top right bottom left
+                    style={'margin': '15px 25px 40px 25px'}  # top right bottom left
                 ),
             ],
                 className="six columns"
@@ -174,6 +172,36 @@ app.layout = html.Div([
         className="container"
     )
 ])
+
+
+######################################### DATA LOADING #########################################
+@app.server.before_first_request
+def load_all_footage():
+    global data_dict, url_dict
+
+    # Load the dictionary containing all the variables needed for analysis
+    data_dict = {
+        'james_bond': load_data("data/video_info.csv"),
+        'zebra': load_data("data/Zebra_object_data.csv"),
+        'car_show_drone': load_data("data/CarShowDrone_object_data.csv"),
+        'car_footage': load_data("data/CarFootage_object_data.csv")
+    }
+
+    url_dict = {
+        'regular': {
+            'james_bond': 'https://www.youtube.com/watch?v=g9S5GndUhko',
+            'zebra': 'https://www.youtube.com/watch?v=TVvtD3AVt10',
+            'car_show_drone': 'https://www.youtube.com/watch?v=gPtn6hD7o8g',
+            'car_footage': 'https://www.youtube.com/watch?v=qX3bDxHuq6I'
+        },
+
+        'bounding_box': {
+            'james_bond': 'https://www.youtube.com/watch?v=g9S5GndUhko',
+            'zebra': 'https://www.youtube.com/watch?v=G2pbZgyWQ5E',
+            'car_show_drone': 'https://www.youtube.com/watch?v=9F5FdcVmLOY',
+            'car_footage': 'https://www.youtube.com/watch?v=EhnNosq1Lrc'
+        }
+    }
 
 
 ######################################### FOOTAGE SELECTION #########################################
@@ -210,12 +238,12 @@ def update_visual_mode(value):
             ),
 
             dcc.Graph(
-                style={'height': 400},
+                style={'height': '55vh'},
                 id="heatmap-confidence"
             ),
 
             dcc.Graph(
-                style={'height': 300},
+                style={'height': '40vh'},
                 id="pie-object-count"
             )
         ]
@@ -236,7 +264,7 @@ def update_detection_mode(value):
             ),
 
             dcc.Graph(
-                style={'height': 300},
+                style={'height': '50vh'},
                 id="bar-score-graph"
             )
         ]
@@ -248,8 +276,9 @@ def update_detection_mode(value):
 @app.callback(Output("bar-score-graph", "figure"),
               [Input("interval-detection-mode", "n_intervals")],
               [State("video-display", "currTime"),
-               State('dropdown-footage-selection', 'value')])
-def update_score_bar(n, current_time, footage):
+               State('dropdown-footage-selection', 'value'),
+               State('slider-minimum-confidence-threshold', 'value')])
+def update_score_bar(n, current_time, footage, threshold):
     layout = go.Layout(
         title='Detection Score of Most Probable Objects',
         showlegend=False,
@@ -266,7 +295,11 @@ def update_score_bar(n, current_time, footage):
             # Select the subset of the dataset that correspond to the current frame
             frame_df = video_info_df[video_info_df["frame"] == current_frame]
 
-            # Select up to 5 frames with the highest scores
+            # Select only the frames above the threshold
+            threshold_dec = threshold/100  # Threshold in decimal
+            frame_df = frame_df[frame_df["score"] > threshold_dec]
+
+            # Select up to 8 frames with the highest scores
             frame_df = frame_df[:min(8, frame_df.shape[0])]
 
             # Add count to object names (e.g. person --> person 1, person --> person 2)
@@ -307,8 +340,9 @@ def update_score_bar(n, current_time, footage):
 @app.callback(Output("pie-object-count", "figure"),
               [Input("interval-visual-mode", "n_intervals")],
               [State("video-display", "currTime"),
-               State('dropdown-footage-selection', 'value')])
-def update_object_count_pie(n, current_time, footage):
+               State('dropdown-footage-selection', 'value'),
+               State('slider-minimum-confidence-threshold', 'value')])
+def update_object_count_pie(n, current_time, footage, threshold):
     layout = go.Layout(
         title='Object Count',
         showlegend=True,
@@ -323,6 +357,10 @@ def update_object_count_pie(n, current_time, footage):
 
             # Select the subset of the dataset that correspond to the current frame
             frame_df = video_info_df[video_info_df["frame"] == current_frame]
+
+            # Select only the frames above the threshold
+            threshold_dec = threshold/100  # Threshold in decimal
+            frame_df = frame_df[frame_df["score"] > threshold_dec]
 
             # Get the count of each object class
             class_counts = frame_df["class_str"].value_counts()
@@ -348,8 +386,9 @@ def update_object_count_pie(n, current_time, footage):
 @app.callback(Output("heatmap-confidence", "figure"),
               [Input("interval-visual-mode", "n_intervals")],
               [State("video-display", "currTime"),
-               State('dropdown-footage-selection', 'value')])
-def update_heatmap_confidence(n, current_time, footage):
+               State('dropdown-footage-selection', 'value'),
+               State('slider-minimum-confidence-threshold', 'value')])
+def update_heatmap_confidence(n, current_time, footage, threshold):
     layout = go.Layout(
         title="Confidence Level of Object Presence",
         margin=go.Margin(l=20, r=20, t=57, b=30)
@@ -367,6 +406,10 @@ def update_heatmap_confidence(n, current_time, footage):
 
             # Select the subset of the dataset that correspond to the current frame
             frame_df = video_info_df[video_info_df["frame"] == current_frame]
+
+            # Select only the frames above the threshold
+            threshold_dec = threshold / 100  # Threshold in decimal
+            frame_df = frame_df[frame_df["score"] > threshold_dec]
 
             # Remove duplicate, keep the top result
             frame_no_dup = frame_df[["class_str", "score"]].drop_duplicates("class_str")
@@ -414,7 +457,7 @@ def update_heatmap_confidence(n, current_time, footage):
     return go.Figure(data=[go.Pie()], layout=layout)
 
 
-# Load additional CSS to our app
+######################################### CSS #########################################
 external_css = [
     "https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css",  # Normalize the CSS
     "https://fonts.googleapis.com/css?family=Open+Sans|Roboto"  # Fonts
@@ -424,35 +467,6 @@ external_css = [
 
 for css in external_css:
     app.css.append_css({"external_url": css})
-
-
-@app.server.before_first_request
-def load_all_footages():
-    global data_dict, url_dict
-
-    # Load the dictionary containing all the variables needed for analysis
-    data_dict = {
-        'james_bond': load_data("data/video_info.csv"),
-        'zebra': load_data("data/Zebra_object_data.csv"),
-        'car_show_drone': load_data("data/CarShowDrone_object_data.csv"),
-        'car_footage': load_data("data/CarFootage_object_data.csv")
-    }
-
-    url_dict = {
-        'regular': {
-            'james_bond': 'https://www.youtube.com/watch?v=g9S5GndUhko',
-            'zebra': 'https://www.youtube.com/watch?v=0o0ywjLaQGo',
-            'car_show_drone': 'https://www.youtube.com/watch?v=CDf0lVw9fUY',
-            'car_footage': 'https://www.youtube.com/watch?v=UWVTnsaVO2U'
-        },
-
-        'bounding_box': {
-            'james_bond': 'https://www.youtube.com/watch?v=g9S5GndUhko',
-            'zebra': 'https://www.youtube.com/watch?v=G2pbZgyWQ5E',
-            'car_show_drone': 'https://www.youtube.com/watch?v=9F5FdcVmLOY',
-            'car_footage': 'https://www.youtube.com/watch?v=EhnNosq1Lrc'
-        }
-    }
 
 
 # Running the server
