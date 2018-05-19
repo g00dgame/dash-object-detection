@@ -73,7 +73,7 @@ app.layout = html.Div([
     # Banner display
     html.Div([
         html.H2(
-            'Object Detection Dashboard',
+            'Object Detection Application',
             id='title'
         ),
         html.Img(
@@ -98,6 +98,19 @@ app.layout = html.Div([
                 ),
 
                 html.Div([
+                    "Minimum Confidence Threshold:",
+                    dcc.Slider(
+                        min=20,
+                        max=80,
+                        marks={i: f'{i}%' for i in range(20, 81, 10)},
+                        value=50,
+                        id='slider-minimum-confidence-threshold'
+                    )
+                ],
+                    style={'margin': '15px 30px 30px 30px'}  # top right bottom left
+                ),
+
+                html.Div([
                     "Footage Selection:",
                     dcc.Dropdown(
                         options=[
@@ -111,7 +124,7 @@ app.layout = html.Div([
                         clearable=False
                     )
                 ],
-                    style={'margin': '15px 20px 15px 20px'}  # top right bottom left
+                    style={'margin': '30px 20px 15px 20px'}  # top right bottom left
                 ),
 
                 html.Div([
@@ -145,21 +158,9 @@ app.layout = html.Div([
                 ],
                     style={'margin': '15px 20px 15px 20px'}  # top right bottom left
                 ),
-
-                html.Div([
-                    "Minimum Confidence Threshold:",
-                    dcc.Slider(
-                        min=20,
-                        max=80,
-                        marks={i: f'{i}%' for i in range(20, 81, 10)},
-                        value=50,
-                        id='slider-minimum-confidence-threshold'
-                    )
-                ],
-                    style={'margin': '15px 25px 40px 25px'}  # top right bottom left
-                ),
             ],
-                className="six columns"
+                className="six columns",
+                style={'margin-bottom': '20px'}
             ),
 
             html.Div(id="div-visual-mode", className="six columns"),
