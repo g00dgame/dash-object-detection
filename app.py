@@ -463,7 +463,7 @@ external_css = [
     "https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css",  # Normalize the CSS
     "https://fonts.googleapis.com/css?family=Open+Sans|Roboto"  # Fonts
     "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css",
-    "https://rawgit.com/xhlulu/dash-object-detection/master/stylesheet.css"
+    "https://cdn.rawgit.com/xhlulu/0acba79000a3fd1e6f552ed82edb8a64/raw/8a0d4e041374bf201d57e4439aeb217f37ab0768/dash_template.css"
 ]
 
 for css in external_css:
