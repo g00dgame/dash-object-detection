@@ -1,4 +1,4 @@
-## Dash Object Detection Dashboard
+## Dash Object Detection Application
 
 This is a demo of the Dash interactive Python framework developed by [Plotly](https://plot.ly/).
 
