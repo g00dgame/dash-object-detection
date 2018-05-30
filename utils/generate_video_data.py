@@ -5,8 +5,8 @@ import cv2 as cv
 import time
 import base64
 import pandas as pd
-from visualization_utils import visualize_boxes_and_labels_on_image_array  # Taken from Google Research GitHub
-from mscoco_label_map import category_index
+from utils.visualization_utils import visualize_boxes_and_labels_on_image_array  # Taken from Google Research GitHub
+from utils.mscoco_label_map import category_index
 
 ############################# MODIFY BELOW #############################
 
