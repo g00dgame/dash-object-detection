@@ -396,7 +396,7 @@ def update_heatmap_confidence(n, current_time, footage, threshold):
     )
 
     if current_time is not None:
-        current_frame = round(current_time * 23.98)
+        current_frame = round(current_time * 24)
 
         if n > 0 and current_frame > 0:
             # Load variables from the data dictionary
