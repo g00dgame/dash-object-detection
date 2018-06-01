@@ -1,7 +1,3 @@
-
-*.xml
-*.iml
+videos/*
 *.pyc
-*.pyc
-*.pyc
-.idea/.name
+.idea/*
