@@ -13,7 +13,10 @@ import plotly.figure_factory as ff
 import video_engine as rpd
 from utils.coco_colors import STANDARD_COLORS
 
+
 DEBUG = True
+FRAMERATE = 24.0
+
 
 app = dash.Dash(__name__)
 server = app.server
@@ -114,12 +117,11 @@ app.layout = html.Div([
                     "Footage Selection:",
                     dcc.Dropdown(
                         options=[
-                            {'label': 'James Bond', 'value': 'james_bond'},
                             {'label': 'Lion fighting Zebras', 'value': 'zebra'},
                             {'label': 'Man driving expensive car', 'value': 'car_footage'},
                             {'label': 'Drone recording of car festival', 'value': 'car_show_drone'}
                         ],
-                        value='james_bond',
+                        value='car_show_drone',
                         id="dropdown-footage-selection",
                         clearable=False
                     )
@@ -134,7 +136,7 @@ app.layout = html.Div([
                             {'label': 'Regular Display', 'value': 'regular'},
                             {'label': 'Display with Bounding Boxes', 'value': 'bounding_box'},
                         ],
-                        value='regular',
+                        value='bounding_box',
                         id="dropdown-video-display-mode",
                         searchable=False,
                         clearable=False
@@ -288,7 +290,7 @@ def update_score_bar(n, current_time, footage, threshold):
     )
 
     if current_time is not None:
-        current_frame = round(current_time * 23.98)
+        current_frame = round(current_time * FRAMERATE)
 
         if n > 0 and current_frame > 0:
             video_info_df = data_dict[footage]["video_info_df"]
@@ -351,7 +353,7 @@ def update_object_count_pie(n, current_time, footage, threshold):
     )
 
     if current_time is not None:
-        current_frame = round(current_time * 23.98)
+        current_frame = round(current_time * FRAMERATE)
 
         if n > 0 and current_frame > 0:
             video_info_df = data_dict[footage]["video_info_df"]
@@ -396,7 +398,7 @@ def update_heatmap_confidence(n, current_time, footage, threshold):
     )
 
     if current_time is not None:
-        current_frame = round(current_time * 24)
+        current_frame = round(current_time * FRAMERATE)
 
         if n > 0 and current_frame > 0:
             # Load variables from the data dictionary
