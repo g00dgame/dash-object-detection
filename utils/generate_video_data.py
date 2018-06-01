@@ -22,7 +22,7 @@ WRITE_VIDEO_OUT = True
 THRESHOLD = 0.2
 OUTPUT_FPS = 24.0
 # Change name of video being processed
-VIDEO_FILE_NAME = "CarFootage"
+VIDEO_FILE_NAME = "../videos/DroneCarFestival3"
 VIDEO_EXTENSION = ".mp4"
 
 ############################# MODIFY ABOVE #############################
@@ -42,7 +42,8 @@ cap = cv.VideoCapture(f'{VIDEO_FILE_NAME}{VIDEO_EXTENSION}')
 if WRITE_VIDEO_OUT:
     # Setup the video creation process
     fourcc = cv.VideoWriter_fourcc(*'MP4V')
-    out = cv.VideoWriter(f'{VIDEO_FILE_NAME}_with_bbox.mp4', fourcc, OUTPUT_FPS, (1280, 720))
+    out = cv.VideoWriter(f'{VIDEO_FILE_NAME}WithBoundingBoxes.mp4', fourcc, OUTPUT_FPS, (1280, 720))
+    out_orig = cv.VideoWriter(f'{VIDEO_FILE_NAME}Original.mp4', fourcc, OUTPUT_FPS, (1280, 720))
 
 # Start the session
 with detection_graph.as_default():
@@ -109,6 +110,7 @@ with detection_graph.as_default():
                 # Update the output video
                 if WRITE_VIDEO_OUT:
                     out.write(image_np)
+                    out_orig.write(image)  # Writes the original image
 
                 # Process the information about the video at that exact timestamp
                 timestamp_df = pd.DataFrame([curr_frame for _ in range(int(num))], columns=["frame"])
@@ -135,7 +137,7 @@ with detection_graph.as_default():
                     print(f"Algorithm runtime at frame {counter}: {t2-t1:.2f}")
 
                 if SHOW_PROCESS:
-                    cv.imshow('Object Ddetection', image_np)
+                    cv.imshow('Object detection', image_np)
 
                     if cv.waitKey(1) & 0xFF == ord('q'):
                         break
@@ -149,12 +151,13 @@ with detection_graph.as_default():
             frame_base64_df.to_csv("video_frames_b64.csv", index=False)
 
         frame_info_df = pd.concat(frame_info_ls)
-        frame_info_df.to_csv(f"{VIDEO_FILE_NAME}_object_data.csv", index=False)
+        frame_info_df.to_csv(f"{VIDEO_FILE_NAME}DetectionData.csv", index=False)
 
 # Release processes
 cap.release()
 
 if WRITE_VIDEO_OUT:
     out.release()
+    out_orig.release()
 
 cv.destroyAllWindows()
