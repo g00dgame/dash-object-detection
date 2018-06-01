@@ -117,9 +117,14 @@ app.layout = html.Div([
                     "Footage Selection:",
                     dcc.Dropdown(
                         options=[
+                            {'label': 'Drone recording of canal festival', 'value': 'DroneCanalFestival'},
+                            {'label': 'Drone recording of car festival', 'value': 'car_show_drone'},
+                            {'label': 'Drone recording of car festival #2', 'value': 'DroneCarFestival2'},
+                            {'label': 'Drone recording of a farm', 'value': 'FarmDrone'},
                             {'label': 'Lion fighting Zebras', 'value': 'zebra'},
+                            {'label': 'Man caught by a CCTV', 'value': 'ManCCTV'},
                             {'label': 'Man driving expensive car', 'value': 'car_footage'},
-                            {'label': 'Drone recording of car festival', 'value': 'car_show_drone'}
+                            {'label': 'Restaurant Robbery', 'value': 'RestaurantHoldup'}
                         ],
                         value='car_show_drone',
                         id="dropdown-footage-selection",
@@ -187,7 +192,12 @@ def load_all_footage():
         'james_bond': load_data("data/james_bond_object_data.csv"),
         'zebra': load_data("data/Zebra_object_data.csv"),
         'car_show_drone': load_data("data/CarShowDrone_object_data.csv"),
-        'car_footage': load_data("data/CarFootage_object_data.csv")
+        'car_footage': load_data("data/CarFootage_object_data.csv"),
+        'DroneCanalFestival': load_data("data/DroneCanalFestivalDetectionData.csv"),
+        'DroneCarFestival2': load_data("data/DroneCarFestival2DetectionData.csv"),
+        'FarmDrone': load_data("data/FarmDroneDetectionData.csv"),
+        'ManCCTV': load_data("data/ManCCTVDetectionData.csv"),
+        'RestaurantHoldup': load_data("data/RestaurantHoldupDetectionData.csv")
     }
 
     url_dict = {
@@ -195,14 +205,24 @@ def load_all_footage():
             'james_bond': 'https://www.youtube.com/watch?v=g9S5GndUhko',
             'zebra': 'https://www.youtube.com/watch?v=TVvtD3AVt10',
             'car_show_drone': 'https://www.youtube.com/watch?v=gPtn6hD7o8g',
-            'car_footage': 'https://www.youtube.com/watch?v=qX3bDxHuq6I'
+            'car_footage': 'https://www.youtube.com/watch?v=qX3bDxHuq6I',
+            'DroneCanalFestival': 'https://youtu.be/0oucTt2OW7M',
+            'DroneCarFestival2': 'https://youtu.be/vhJ7MHsJvwY',
+            'FarmDrone': 'https://youtu.be/aXfKuaP8v_A',
+            'ManCCTV': 'https://youtu.be/BYZORBIxgbc',
+            'RestaurantHoldup': 'https://youtu.be/WDin4qqgpac',
         },
 
         'bounding_box': {
             'james_bond': 'https://www.youtube.com/watch?v=g9S5GndUhko',
             'zebra': 'https://www.youtube.com/watch?v=G2pbZgyWQ5E',
             'car_show_drone': 'https://www.youtube.com/watch?v=9F5FdcVmLOY',
-            'car_footage': 'https://www.youtube.com/watch?v=EhnNosq1Lrc'
+            'car_footage': 'https://www.youtube.com/watch?v=EhnNosq1Lrc',
+            'DroneCanalFestival': 'https://youtu.be/6ZZmsnwk2HQ',
+            'DroneCarFestival2': 'https://youtu.be/2Gr4RQ-JHIs',
+            'FarmDrone': 'https://youtu.be/pvvW5yZlpyc',
+            'ManCCTV': 'https://youtu.be/1oMrHLrtOZw',
+            'RestaurantHoldup': 'https://youtu.be/HOIKOwixYEY',
         }
     }
 
@@ -286,7 +306,10 @@ def update_score_bar(n, current_time, footage, threshold):
         title='Detection Score of Most Probable Objects',
         showlegend=False,
         margin=go.Margin(l=70, r=40, t=50, b=30),
-        yaxis={'title': 'Score'}
+        yaxis={
+            'title': 'Score',
+            'range': [0,1]
+        }
     )
 
     if current_time is not None:
@@ -448,7 +471,9 @@ def update_heatmap_confidence(n, current_time, footage, threshold):
                 colorscale=colorscale,
                 font_colors=font_colors,
                 hoverinfo='text',
-                text=hover_text
+                text=hover_text,
+                zmin=0,
+                zmax=1
             )
 
             pt.layout.title = layout.title
