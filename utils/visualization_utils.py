@@ -32,7 +32,6 @@ import PIL.ImageFont as ImageFont
 import six
 import tensorflow as tf
 
-
 # from object_detection.core import standard_fields as fields  # Commented out by xhlulu
 
 
