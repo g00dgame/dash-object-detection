@@ -1,3 +1,4 @@
 videos/*
 *.pyc
 .idea/*
+frozen_inference_graph.pb
