@@ -184,7 +184,7 @@ def load_all_footage():
 
     # Load the dictionary containing all the variables needed for analysis
     data_dict = {
-        'james_bond': load_data("data/video_info.csv"),
+        'james_bond': load_data("data/james_bond_object_data.csv"),
         'zebra': load_data("data/Zebra_object_data.csv"),
         'car_show_drone': load_data("data/CarShowDrone_object_data.csv"),
         'car_footage': load_data("data/CarFootage_object_data.csv")
