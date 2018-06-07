@@ -112,6 +112,7 @@ app.layout = html.Div([
                         max=80,
                         marks={i: f'{i}%' for i in range(20, 81, 10)},
                         value=50,
+                        updatemode='drag',
                         id='slider-minimum-confidence-threshold'
                     )
                 ],
