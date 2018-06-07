@@ -1,5 +1,4 @@
 /*
-Gist: https://gist.github.com/xhlulu/0acba79000a3fd1e6f552ed82edb8a64/
 Rawgit: https://rawgit.com/xhlulu/dash-object-detection/master/stylesheet.css
  */
 
@@ -22,6 +21,12 @@ Rawgit: https://rawgit.com/xhlulu/dash-object-detection/master/stylesheet.css
 - Media Queries
 */
 
+
+/* Custom
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+._dash-undo-redo {
+  display: none;
+}
 
 
 /* Banner
