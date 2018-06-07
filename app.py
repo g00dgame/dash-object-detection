@@ -1,17 +1,19 @@
 import os
+from textwrap import dedent
 
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Input, Output, State
 import numpy as np
 import pandas as pd
-from PIL import ImageColor
 import plotly.graph_objs as go
 import plotly.figure_factory as ff
+from PIL import ImageColor
+from dash.dependencies import Input, Output, State
 
 import video_engine as rpd
 from utils.coco_colors import STANDARD_COLORS
+from utils.demo import demo_explanation
 
 
 DEBUG = True
@@ -27,6 +29,9 @@ if 'DYNO' in os.environ:
     app.scripts.append_script({
         'external_url': 'https://cdn.rawgit.com/chriddyp/ca0d8f02a1659981a0ea7f013a378bbd/raw/e79f3f789517deec58f41251f7dbb6bee72c44ab/plotly_ga.js'
     })
+    demo_mode = True
+else:
+    demo_mode = True
 
 app.scripts.config.serve_locally = True
 app.config['suppress_callback_exceptions'] = True
@@ -71,12 +76,12 @@ def load_data(path):
     return data_dict
 
 
-######################################### MAIN APP #########################################
+# Main App
 app.layout = html.Div([
     # Banner display
     html.Div([
         html.H2(
-            'Object Detection Application',
+            'Object Detection Explorer',
             id='title'
         ),
         html.Img(
@@ -175,14 +180,16 @@ app.layout = html.Div([
             html.Div(id="div-detection-mode", className="six columns")
         ],
             className="row"
-        )
+        ),
+
+        demo_explanation(demo_mode)
     ],
         className="container"
     )
 ])
 
 
-######################################### DATA LOADING #########################################
+# Data Loading
 @app.server.before_first_request
 def load_all_footage():
     global data_dict, url_dict
@@ -227,7 +234,7 @@ def load_all_footage():
     }
 
 
-######################################### FOOTAGE SELECTION #########################################
+# Footage Selection
 @app.callback(Output("div-video-player", "children"),
               [Input('dropdown-footage-selection', 'value'),
                Input('dropdown-video-display-mode', 'value')])
@@ -248,7 +255,7 @@ def select_footage(footage, display_mode):
     ]
 
 
-######################################### GRAPH VIEW SELECTION #########################################
+# Graph View Selection
 @app.callback(Output("div-visual-mode", "children"),
               [Input("dropdown-graph-view-mode", "value")])
 def update_visual_mode(value):
@@ -295,7 +302,7 @@ def update_detection_mode(value):
         return []
 
 
-######################################### UPDATING FIGURES #########################################
+# Updating Figures
 @app.callback(Output("bar-score-graph", "figure"),
               [Input("interval-detection-mode", "n_intervals")],
               [State("video-display", "currTime"),
@@ -485,12 +492,11 @@ def update_heatmap_confidence(n, current_time, footage, threshold):
     return go.Figure(data=[go.Pie()], layout=layout)
 
 
-######################################### CSS #########################################
 external_css = [
     "https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css",  # Normalize the CSS
     "https://fonts.googleapis.com/css?family=Open+Sans|Roboto"  # Fonts
     "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css",
-    "https://cdn.rawgit.com/xhlulu/dash-object-detection/master/stylesheet.css"
+    "https://cdn.rawgit.com/plotly/dash-object-detection/8d134696/stylesheet.css"
 ]
 
 for css in external_css:
