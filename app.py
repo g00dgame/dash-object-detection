@@ -185,7 +185,7 @@ app.layout = html.Div([
 
         demo_explanation(demo_mode)
     ],
-        className="container"
+        className="container scalable"
     )
 ])
 
