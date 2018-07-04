@@ -5,6 +5,13 @@ import dash_html_components as html
 
 
 def DemoDescriptionCard(markdown_text):
+    """
+    'width': '80%',
+    'max-width': '1024px',
+    'font-family': 'Roboto, sans-serif'
+    :param markdown_text:
+    :return: html.Div
+    """
     return html.Div(
             className='row',
             style={
@@ -16,10 +23,8 @@ def DemoDescriptionCard(markdown_text):
                 'border': 'thin lightgrey solid',
                 'font-family': 'Roboto, sans-serif'
             },
-            children=[
-                dcc.Markdown(dedent(markdown_text))
-            ]
-        )
+            children=dcc.Markdown(dedent(markdown_text))
+    )
 
 
 def demo_explanation(demo_mode):
