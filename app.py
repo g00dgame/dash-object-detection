@@ -13,7 +13,7 @@ from dash.dependencies import Input, Output, State
 
 import video_engine as rpd
 from utils.coco_colors import STANDARD_COLORS
-from utils.demo import demo_explanation
+import utils.dash_reusable_components as drc
 
 
 DEBUG = True
@@ -29,9 +29,6 @@ if 'DYNO' in os.environ:
     app.scripts.append_script({
         'external_url': 'https://cdn.rawgit.com/chriddyp/ca0d8f02a1659981a0ea7f013a378bbd/raw/e79f3f789517deec58f41251f7dbb6bee72c44ab/plotly_ga.js'
     })
-    demo_mode = True
-else:
-    demo_mode = False
 
 app.scripts.config.serve_locally = True
 app.config['suppress_callback_exceptions'] = True
@@ -183,7 +180,26 @@ app.layout = html.Div([
             className="row"
         ),
 
-        demo_explanation(demo_mode)
+        drc.DemoDescriptionCard(
+            '''
+            ## Getting Started with the Demo
+            To get started, select a footage you want to view, and choose the display mode (with or without 
+            bounding boxes). Then, you can start playing the video, and the visualization will be displayed depending
+            on the current time.
+
+            ## What am I looking at?
+            This app enhances visualization of objects detected using state-of-the-art Mobile Vision Neural Networks.
+            Most user generated videos are dynamic and fast-paced, which might be hard to interpret. A confidence
+            heatmap stays consistent through the video and intuitively displays the model predictions. The pie chart
+            lets you interpret how the object classes are divided, which is useful when analyzing videos with numerous
+            and differing objects.
+
+            The purpose of this demo is to explore alternative visualization methods for Object Detection. Therefore, 
+            the visualizations, predictions and videos are not generated in real time, but done beforehand. To read 
+            more about it, please visit the 
+            [project repo](https://github.com/plotly/dash-object-detection).
+            '''
+        )
     ],
         className="container scalable"
     )
