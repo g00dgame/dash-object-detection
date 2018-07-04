@@ -88,7 +88,7 @@ app.layout = html.Div([
             src="https://s3-us-west-1.amazonaws.com/plotly-tutorials/logo/new-branding/dash-logo-by-plotly-stripe-inverted.png"
         )
     ],
-        className="banner"
+        className="banner",
     ),
 
     # Body
@@ -264,7 +264,7 @@ def update_visual_mode(value):
         return [
             dcc.Interval(
                 id="interval-visual-mode",
-                interval=800,
+                interval=500,
                 n_intervals=0
             ),
 

@@ -1,14 +1,15 @@
 /* Table of contents
 ––––––––––––––––––––––––––––––––––––––––––––––––––
 - Banner
+- Scalable Container
+- Remove Undo
 
 
 /* Banner
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 .banner {
     height: 75px;
-    background-color: #414073;
-    border-radius: 2px 2px 4px 4px;
+    background-color: #fc8600; /* Machine Learning Color is orange */
     padding-top: 0px;
     padding-left: 0px;
     padding-right: 0px;
@@ -32,7 +33,16 @@
     height: 75px;
 }
 
+/* Scalable Container
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
 .container.scalable {
     width: 90%;
     max-width: none;
 }
+
+/* Remove Undo
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+._dash-undo-redo {
+  display: none;
+}
+
