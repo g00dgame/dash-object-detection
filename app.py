@@ -514,7 +514,7 @@ external_css = [
     "https://fonts.googleapis.com/css?family=Open+Sans|Roboto"  # Fonts
     "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css",
     "https://cdn.rawgit.com/xhlulu/9a6e89f418ee40d02b637a429a876aa9/raw/base-styles.css",
-    "https://rawgit.com/plotly/dash-object-detection/new-design/custom-styles.css"
+    "https://cdn.rawgit.com/plotly/dash-object-detection/875fdd6b/custom-styles.css"
 ]
 
 for css in external_css:
