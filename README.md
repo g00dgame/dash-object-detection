@@ -19,6 +19,8 @@ The data displayed in the app are pregenerated for demo purposes. To generate th
 ### Screenshots
 The following are screenshots for the app in this repo:
 
+![Animated1](images/Animated1.gif)
+
 ![Screenshot1](images/Screenshot1.png)
 
 ![Screenshot2](images/Screenshot2.png)
