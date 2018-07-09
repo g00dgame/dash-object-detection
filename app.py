@@ -280,7 +280,7 @@ def update_visual_mode(value):
         return [
             dcc.Interval(
                 id="interval-visual-mode",
-                interval=500,
+                interval=700,
                 n_intervals=0
             ),
 
@@ -306,7 +306,7 @@ def update_detection_mode(value):
         return [
             dcc.Interval(
                 id="interval-detection-mode",
-                interval=800,
+                interval=700,
                 n_intervals=0
             ),
 
