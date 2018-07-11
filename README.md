@@ -8,7 +8,7 @@ To learn more check out our [documentation](https://plot.ly/dash).
 
 The videos are displayed using a community-maintained Dash video component. It is made by two Plotly community contributors. You can find the [source code here](https://github.com/SkyRatInd/Video-Engine-Dash).
 
-All videos used are open-sourced under Creative Commons. The [original links can be found here](data/Original Footage.md).
+All videos used are open-sourced under Creative Commons. The [original links can be found here](data/original_footage.md).
 
 ### Model
 The object detection model is the MobileNet v1, made by Google and trained on the COCO dataset. You can find their implementation on their [official Github repo](https://github.com/tensorflow/models/blob/master/research/slim/nets/mobilenet_v1.md). You are encouraged to try this app with other models.
