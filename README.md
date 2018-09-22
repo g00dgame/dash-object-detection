@@ -20,18 +20,18 @@ To get started, select a footage you want to view, and choose the display mode (
 First create a virtual environment with conda or venv inside a temp folder, then activate it.
 
 ```
-virtualenv <name of the venv>
+virtualenv dash-object-detection
 
 # Windows
-<name of the venv>\Scripts\activate
+dash-object-detection\Scripts\activate
 # Or Linux
 source venv/bin/activate
 ```
 
 Clone the git repo, then install the requirements with pip
 ```
-git clone <link to repo>
-cd <name of repo>
+git clone https://github.com/plotly/dash-object-detection.git
+cd dash-object-detection
 pip install -r requirements.txt
 ```
 
