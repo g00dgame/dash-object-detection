@@ -1,0 +1,247 @@
+{
+  "src/lib/components/DashPlayer.react.js": {
+    "description": "A Dash component for playing a variety of URLs, including file paths,\nYouTube, Facebook, Twitch, SoundCloud, Streamable, Vimeo, Wistia, Mixcloud,\nand DailyMotion.",
+    "displayName": "DashPlayer",
+    "methods": [
+      {
+        "name": "updateCurrentTime",
+        "docblock": null,
+        "modifiers": [],
+        "params": [],
+        "returns": null
+      },
+      {
+        "name": "updateSecondsLoaded",
+        "docblock": null,
+        "modifiers": [],
+        "params": [],
+        "returns": null
+      },
+      {
+        "name": "updateDuration",
+        "docblock": null,
+        "modifiers": [],
+        "params": [],
+        "returns": null
+      },
+      {
+        "name": "updateIntervals",
+        "docblock": "When one of the interval props are changed, this clears the currently\nassigned handle and set it to the new interval value. It works for\ncurrentTime, duration and secondsLoaded.",
+        "modifiers": [],
+        "params": [
+          {
+            "name": "prevProps"
+          }
+        ],
+        "returns": null,
+        "description": "When one of the interval props are changed, this clears the currently\nassigned handle and set it to the new interval value. It works for\ncurrentTime, duration and secondsLoaded."
+      },
+      {
+        "name": "setSeekTo",
+        "docblock": "Applies the seekTo() method to the player if the seekTo prop\ncontains any value, then set seekTo to null. If seekTo was already\nnull, it doesn't do anything.",
+        "modifiers": [],
+        "params": [],
+        "returns": null,
+        "description": "Applies the seekTo() method to the player if the seekTo prop\ncontains any value, then set seekTo to null. If seekTo was already\nnull, it doesn't do anything."
+      }
+    ],
+    "props": {
+      "id": {
+        "type": {
+          "name": "string"
+        },
+        "required": false,
+        "description": "The ID used to identify this compnent in Dash callbacks"
+      },
+      "setProps": {
+        "type": {
+          "name": "func"
+        },
+        "required": false,
+        "description": "Dash-assigned callback that should be called whenever any of the\nproperties change"
+      },
+      "url": {
+        "type": {
+          "name": "string"
+        },
+        "required": false,
+        "description": "The url of a video or song to play\n\u25e6  Can be an array or MediaStream object"
+      },
+      "playing": {
+        "type": {
+          "name": "bool"
+        },
+        "required": false,
+        "description": "Set to true or false to pause or play the media",
+        "defaultValue": {
+          "value": "false",
+          "computed": false
+        }
+      },
+      "loop": {
+        "type": {
+          "name": "bool"
+        },
+        "required": false,
+        "description": "Set to true or false to loop the media",
+        "defaultValue": {
+          "value": "false",
+          "computed": false
+        }
+      },
+      "controls": {
+        "type": {
+          "name": "bool"
+        },
+        "required": false,
+        "description": "Set to true or false to display native player controls\nVimeo, Twitch and Wistia player will always display controls",
+        "defaultValue": {
+          "value": "false",
+          "computed": false
+        }
+      },
+      "volume": {
+        "type": {
+          "name": "number"
+        },
+        "required": false,
+        "description": "Set the volume of the player, between 0 and 1\nnull uses default volume on all players",
+        "defaultValue": {
+          "value": "null",
+          "computed": false
+        }
+      },
+      "muted": {
+        "type": {
+          "name": "bool"
+        },
+        "required": false,
+        "description": "Mutes the player\nOnly works if volume is set",
+        "defaultValue": {
+          "value": "false",
+          "computed": false
+        }
+      },
+      "playbackRate": {
+        "type": {
+          "name": "number"
+        },
+        "required": false,
+        "description": "Set the playback rate of the player\nOnly supported by YouTube, Wistia, and file paths",
+        "defaultValue": {
+          "value": "1",
+          "computed": false
+        }
+      },
+      "width": {
+        "type": {
+          "name": "string"
+        },
+        "required": false,
+        "description": "Set the width of the player",
+        "defaultValue": {
+          "value": "'640px'",
+          "computed": false
+        }
+      },
+      "height": {
+        "type": {
+          "name": "string"
+        },
+        "required": false,
+        "description": "Set the height of the player",
+        "defaultValue": {
+          "value": "'360px'",
+          "computed": false
+        }
+      },
+      "style": {
+        "type": {
+          "name": "object"
+        },
+        "required": false,
+        "description": "Add inline styles to the root element",
+        "defaultValue": {
+          "value": "{}",
+          "computed": false
+        }
+      },
+      "playsinline": {
+        "type": {
+          "name": "bool"
+        },
+        "required": false,
+        "description": "Applies the html5 playsinline attribute where supported, which allows\nvideos to be played inline and will not automatically enter fullscreen\nmode when playback begins (for iOS).",
+        "defaultValue": {
+          "value": "false",
+          "computed": false
+        }
+      },
+      "currentTime": {
+        "type": {
+          "name": "number"
+        },
+        "required": false,
+        "description": "Returns the number of seconds that have been played"
+      },
+      "secondsLoaded": {
+        "type": {
+          "name": "number"
+        },
+        "required": false,
+        "description": "Returns the number of seconds that have been loaded"
+      },
+      "duration": {
+        "type": {
+          "name": "number"
+        },
+        "required": false,
+        "description": "Returns the duration (in seconds) of the currently playing media"
+      },
+      "intervalCurrentTime": {
+        "type": {
+          "name": "number"
+        },
+        "required": false,
+        "description": "Interval in milliseconds at which currenTtime prop is updated.",
+        "defaultValue": {
+          "value": "100",
+          "computed": false
+        }
+      },
+      "intervalSecondsLoaded": {
+        "type": {
+          "name": "number"
+        },
+        "required": false,
+        "description": "Interval in milliseconds at which secondsLoaded prop is updated.",
+        "defaultValue": {
+          "value": "500",
+          "computed": false
+        }
+      },
+      "intervalDuration": {
+        "type": {
+          "name": "number"
+        },
+        "required": false,
+        "description": "Interval in milliseconds at which duration prop is updated.",
+        "defaultValue": {
+          "value": "500",
+          "computed": false
+        }
+      },
+      "seekTo": {
+        "type": {
+          "name": "number"
+        },
+        "required": false,
+        "description": "Seek to the given number of seconds, or fraction if amount is between 0 and 1",
+        "defaultValue": {
+          "value": "null",
+          "computed": false
+        }
+      }
+    }
+  }
+}
