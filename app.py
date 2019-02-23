@@ -14,7 +14,6 @@ import dash_player as player
 from utils.coco_colors import STANDARD_COLORS
 import utils.dash_reusable_components as drc
 
-
 DEBUG = True
 FRAMERATE = 24.0
 
@@ -117,34 +116,142 @@ def load_data(path):
 
 # Main App
 
+
+# Main App
+
 app.layout = html.Div(
     children=[
         html.Div(
             id='top-bar',
-            className='banner',
+            className='row',
             style={'background-color': '#fa4f56',
-                   'height': '15px',
-                   'marginTop': '0px',
-                   'padding': 0
+                   'height': '5px',
                    }
         ),
+        # main app body
         html.Div(
             children=[
                 html.Div(
-                    id='left-side-container',
-                    children="Left-side",
-                    className='eight columns'
-                ),
-                html.Div(
-                    id='right-side-container',
-                    children="Right-side",
-                    className='four columns'
+                    id='left-side-column',
+                    className='seven columns',
+                    style={'display': 'flex',
+                           'flexDirection': 'column',
+                           'flex': 1,
+                           'height': 'calc(100vh - 5px)',
+                           'overflow-y': 'scroll',
+                           'backgroundColor': '#F9F9F9',
+                           'justifyContent': 'center',
+                           'border': '1px solid black'},
+                    children=[
+                        html.Div(
+                            id='header-section',
+                            children=[
+                                html.H4(
+                                    'Object Detection Explorer',
+                                ),
+                                html.P(
+                                    'To get started, select a footage you want to view, and choose the display mode (with or without'
+                                    ' bounding boxes). Then, you can start playing the video, and the visualization will '
+                                    'be displayed depending on the current time.'
+                                ),
+                                html.Button("Learn More", id="learn-more-button", n_clicks=0)
+                            ]
+                        ),
+                        html.Div(id='video-player', style={'height': '200px', 'width': '300px', 'border': '1px solid'}),
+                        html.Div(
+                            className='control-section',
+                            children=[
+                                html.Div(
+                                    className='control-element',
+                                    children=[
+                                        html.Div(children=["Minimum Confidence Threshold:"], style={'width': '40%'}),
+                                        dcc.Slider(
+                                            id='slider-minimum-confidence-threshold',
+                                            min=20,
+                                            max=80,
+                                            marks={i: f'{i}%' for i in range(20, 81, 10)},
+                                            value=50,
+                                            updatemode='drag'
+                                        )
+                                    ]
+                                ),
+
+                                html.Div(
+                                    className='control-element',
+                                    children=[
+                                        html.Div(children=["Footage Selection:"]),
+                                        html.Div(dcc.Dropdown(
+                                            id="dropdown-footage-selection",
+                                            options=[
+                                                {'label': 'Drone recording of canal festival',
+                                                 'value': 'DroneCanalFestival'},
+                                                {'label': 'Drone recording of car festival', 'value': 'car_show_drone'},
+                                                {'label': 'Drone recording of car festival #2',
+                                                 'value': 'DroneCarFestival2'},
+                                                {'label': 'Drone recording of a farm', 'value': 'FarmDrone'},
+                                                {'label': 'Lion fighting Zebras', 'value': 'zebra'},
+                                                {'label': 'Man caught by a CCTV', 'value': 'ManCCTV'},
+                                                {'label': 'Man driving expensive car', 'value': 'car_footage'},
+                                                {'label': 'Restaurant Robbery', 'value': 'RestaurantHoldup'}
+                                            ],
+                                            value='car_show_drone',
+                                            clearable=False,
+                                            # style={'width': '60%'}
+                                        ))
+                                    ]
+                                ),
+
+                                html.Div(
+                                    className='control-element',
+                                    children=[
+                                        html.Div(children=["Video Display Mode:"], style={'width': '40%'}),
+                                        dcc.Dropdown(
+                                            id="dropdown-video-display-mode",
+                                            options=[
+                                                {'label': 'Regular Display', 'value': 'regular'},
+                                                {'label': 'Display with Bounding Boxes', 'value': 'bounding_box'},
+                                            ],
+                                            value='bounding_box',
+                                            searchable=False,
+                                            clearable=False,
+                                            style={'width': '60%'}
+                                        )
+                                    ]
+                                ),
+
+                                html.Div(
+                                    className='control-element',
+                                    children=[
+                                        html.Div(children=["Graph View Mode:"], style={'width': '40%'}),
+                                        dcc.Dropdown(
+                                            id="dropdown-graph-view-mode",
+                                            options=[
+                                                {'label': 'Visual Mode', 'value': 'visual'},
+                                                {'label': 'Detection Mode', 'value': 'detection'}
+                                            ],
+                                            value='visual',
+                                            searchable=False,
+                                            clearable=False,
+                                            style={'width': '60%'}
+                                        )
+                                    ]
+                                )
+                            ]
+                        )
+                    ]
                 )
             ]
+        ),
+        html.Div(
+            id='right-side-column',
+            children="Right-side",
+            className='five columns'
+
         )
-        # markdown_popup()
     ]
+    # markdown_popup()
 )
+
 
 #     html.Div([
 #         html.H2(

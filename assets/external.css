@@ -26,4 +26,27 @@
     font-size: 1.2rem;
 }
 
+#header-section {
+    width: 90%;
+    margin: auto;
+    border: 1px solid red;
+}
 
+.control-section {
+    width: 90%;
+    margin: auto;
+    display: flex;
+    flex-flow: column nowrap;
+    padding: 5px;
+}
+
+.control-element {
+    padding: 5px;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-start;
+}
+
+.Select-control {
+    width: 100%;
+}
