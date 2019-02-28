@@ -133,18 +133,19 @@ app.layout = html.Div(
             children=[
                 html.Div(
                     id='left-side-column',
-                    className='seven columns',
+                    className='eight columns',
                     style={'display': 'flex',
                            'flexDirection': 'column',
                            'flex': 1,
                            'height': 'calc(100vh - 5px)',
-                           'overflow-y': 'scroll',
+                           # 'overflow-y': 'scroll',
                            'backgroundColor': '#F9F9F9',
-                           'justifyContent': 'center',
+                           'justifyContent': 'space-around',
+                           'alignItems': 'center',
                            'border': '1px solid black'},
                     children=[
                         html.Div(
-                            id='header-section',
+                            id='header-section',  # todo: set font for header and body
                             children=[
                                 html.H4(
                                     'Object Detection Explorer',
@@ -165,22 +166,22 @@ app.layout = html.Div(
                                     className='control-element',
                                     children=[
                                         html.Div(children=["Minimum Confidence Threshold:"], style={'width': '40%'}),
-                                        dcc.Slider(
+                                        html.Div(dcc.Slider(
                                             id='slider-minimum-confidence-threshold',
                                             min=20,
                                             max=80,
                                             marks={i: f'{i}%' for i in range(20, 81, 10)},
                                             value=50,
                                             updatemode='drag'
-                                        )
+                                        ), style={'width': '60%'})
                                     ]
                                 ),
 
                                 html.Div(
                                     className='control-element',
                                     children=[
-                                        html.Div(children=["Footage Selection:"]),
-                                        html.Div(dcc.Dropdown(
+                                        html.Div(children=["Footage Selection:"], style={'width': '40%'}),
+                                        dcc.Dropdown(
                                             id="dropdown-footage-selection",
                                             options=[
                                                 {'label': 'Drone recording of canal festival',
@@ -196,8 +197,8 @@ app.layout = html.Div(
                                             ],
                                             value='car_show_drone',
                                             clearable=False,
-                                            # style={'width': '60%'}
-                                        ))
+                                            style={'width': '60%'}
+                                        )
                                     ]
                                 ),
 
@@ -244,143 +245,25 @@ app.layout = html.Div(
         ),
         html.Div(
             id='right-side-column',
-            children="Right-side",
-            className='five columns'
-
+            className='four columns',
+            style={
+                   'height': 'calc(100vh - 5px)',
+                   'overflow-y': 'scroll',
+                   'backgroundColor': '#F9F9F9',
+                   'border': '1px solid black',
+                'marginLeft': '0px',
+                'float':'right'
+                   },
+            children=[
+                html.Img(
+                    style={'width': '100px', 'margin': '2px', 'float': 'right', 'display': 'inline-block'},
+                    src="https://s3-us-west-1.amazonaws.com/plotly-tutorials/logo/new-branding/dash-logo-by-plotly-stripe.png"),
+                html.Div(id="div-visual-mode", style={'width': '100%'})
+            ]
         )
     ]
     # markdown_popup()
 )
-
-
-#     html.Div([
-#         html.H2(
-#             'Object Detection Explorer',
-#             id='title'
-#         ),
-#         html.Img(
-#             src="https://s3-us-west-1.amazonaws.com/plotly-tutorials/logo/new-branding/dash-logo-by-plotly-stripe-inverted.png"
-#         )
-#     ],
-#         className="banner",
-#     ),
-#
-#     # Body
-#     html.Div([
-#         html.Div([
-#             html.Div([
-#                 html.Div([
-#                     rpd.my_Player()
-#                 ],
-#                     id='div-video-player',
-#                     style={
-#                         'color': 'rgb(255, 255, 255)',
-#                         'margin-bottom': '-30px'
-#                     }
-#                 ),
-#
-#                 html.Div([
-#                     "Minimum Confidence Threshold:",
-#                     dcc.Slider(
-#                         min=20,
-#                         max=80,
-#                         marks={i: f'{i}%' for i in range(20, 81, 10)},
-#                         value=50,
-#                         updatemode='drag',
-#                         id='slider-minimum-confidence-threshold'
-#                     )
-#                 ],
-#                     style={'margin': '15px 30px 30px 30px'}  # top right bottom left
-#                 ),
-#
-#                 html.Div([
-#                     "Footage Selection:",
-#                     dcc.Dropdown(
-#                         options=[
-#                             {'label': 'Drone recording of canal festival', 'value': 'DroneCanalFestival'},
-#                             {'label': 'Drone recording of car festival', 'value': 'car_show_drone'},
-#                             {'label': 'Drone recording of car festival #2', 'value': 'DroneCarFestival2'},
-#                             {'label': 'Drone recording of a farm', 'value': 'FarmDrone'},
-#                             {'label': 'Lion fighting Zebras', 'value': 'zebra'},
-#                             {'label': 'Man caught by a CCTV', 'value': 'ManCCTV'},
-#                             {'label': 'Man driving expensive car', 'value': 'car_footage'},
-#                             {'label': 'Restaurant Robbery', 'value': 'RestaurantHoldup'}
-#                         ],
-#                         value='car_show_drone',
-#                         id="dropdown-footage-selection",
-#                         clearable=False
-#                     )
-#                 ],
-#                     style={'margin': '30px 20px 15px 20px'}  # top right bottom left
-#                 ),
-#
-#                 html.Div([
-#                     "Video Display Mode:",
-#                     dcc.Dropdown(
-#                         options=[
-#                             {'label': 'Regular Display', 'value': 'regular'},
-#                             {'label': 'Display with Bounding Boxes', 'value': 'bounding_box'},
-#                         ],
-#                         value='bounding_box',
-#                         id="dropdown-video-display-mode",
-#                         searchable=False,
-#                         clearable=False
-#                     )
-#                 ],
-#                     style={'margin': '15px 20px 15px 20px'}  # top right bottom left
-#                 ),
-#
-#                 html.Div([
-#                     "Graph View Mode:",
-#                     dcc.Dropdown(
-#                         options=[
-#                             {'label': 'Visual Mode', 'value': 'visual'},
-#                             {'label': 'Detection Mode', 'value': 'detection'}
-#                         ],
-#                         value='visual',
-#                         id="dropdown-graph-view-mode",
-#                         searchable=False,
-#                         clearable=False
-#                     )
-#                 ],
-#                     style={'margin': '15px 20px 15px 20px'}  # top right bottom left
-#                 ),
-#             ],
-#                 className="six columns",
-#                 style={'margin-bottom': '20px'}
-#             ),
-#
-#             html.Div(id="div-visual-mode", className="six columns"),
-#
-#             html.Div(id="div-detection-mode", className="six columns")
-#         ],
-#             className="row"
-#         ),
-#
-#         drc.DemoDescriptionCard(
-#             '''
-#             ## Getting Started with the Demo
-#             To get started, select a footage you want to view, and choose the display mode (with or without
-#             bounding boxes). Then, you can start playing the video, and the visualization will be displayed depending
-#             on the current time.
-#
-#             ## What am I looking at?
-#             This app enhances visualization of objects detected using state-of-the-art Mobile Vision Neural Networks.
-#             Most user generated videos are dynamic and fast-paced, which might be hard to interpret. A confidence
-#             heatmap stays consistent through the video and intuitively displays the model predictions. The pie chart
-#             lets you interpret how the object classes are divided, which is useful when analyzing videos with numerous
-#             and differing objects.
-#
-#             The purpose of this demo is to explore alternative visualization methods for Object Detection. Therefore,
-#             the visualizations, predictions and videos are not generated in real time, but done beforehand. To read
-#             more about it, please visit the
-#             [project repo](https://github.com/plotly/dash-object-detection).
-#             '''
-#         )
-#     ],
-#         className="container scalable"
-#     )
-# ])
 
 
 # Data Loading
@@ -428,52 +311,51 @@ def load_all_footage():
     }
 
 
-# # Footage Selection
-# @app.callback(Output("div-video-player", "children"),
-#               [Input('dropdown-footage-selection', 'value'),
-#                Input('dropdown-video-display-mode', 'value')])
-# def select_footage(footage, display_mode):
-#     url = url_dict[display_mode][footage]  # Find desired footage
-#
-#     return [
-#         rpd.my_Player(
-#             id='video-display',
-#             url=url,
-#             width='100%',
-#             height='50vh',
-#             controls=True,
-#             playing=False,
-#             seekTo=0,
-#             volume=1
-#         )
-#     ]
-#
-#
-# # Graph View Selection
-# @app.callback(Output("div-visual-mode", "children"),
-#               [Input("dropdown-graph-view-mode", "value")])
-# def update_visual_mode(value):
-#     if value == "visual":
-#         return [
-#             dcc.Interval(
-#                 id="interval-visual-mode",
-#                 interval=700,
-#                 n_intervals=0
-#             ),
-#
-#             dcc.Graph(
-#                 style={'height': '55vh'},
-#                 id="heatmap-confidence"
-#             ),
-#
-#             dcc.Graph(
-#                 style={'height': '40vh'},
-#                 id="pie-object-count"
-#             )
-#         ]
-#
+# Footage Selection
+@app.callback(Output("video-display", "url"),
+              [Input('dropdown-footage-selection', 'value'),
+               Input('dropdown-video-display-mode', 'value')])
+def select_footage(footage, display_mode):
+    # Find desired footage and update player video
+    url = url_dict[display_mode][footage]
+    return url
+
+
+# # Learn more popup
+# @app.callback(Output("markdown", "style"),
+#               [Input("learn-more-button", "n_clicks"), Input("markdown_close", "n_clicks")])
+# def update_click_output(button_click, close_click):
+#     if button_click > close_click:
+#         return {"display": "block"}
 #     else:
-#         return []
+#         return {"display": "none"}
+
+
+# Graph View Selection
+@app.callback(Output("div-visual-mode", "children"),
+              [Input("dropdown-graph-view-mode", "value")])
+def update_visual_mode(value):
+    if value == "visual":
+        return [
+            dcc.Interval(
+                id="interval-visual-mode",
+                interval=700,
+                n_intervals=0
+            ),
+
+            dcc.Graph(
+                id="heatmap-confidence"
+            ),
+
+            dcc.Graph(
+                id="pie-object-count"
+            )
+        ]
+
+    else:
+        return []
+
+
 #
 #
 # @app.callback(Output("div-detection-mode", "children"),

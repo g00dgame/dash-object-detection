@@ -28,25 +28,36 @@
 
 #header-section {
     width: 90%;
-    margin: auto;
     border: 1px solid red;
 }
 
 .control-section {
-    width: 90%;
-    margin: auto;
+    width: 85%;
     display: flex;
     flex-flow: column nowrap;
     padding: 5px;
 }
 
 .control-element {
-    padding: 5px;
+    font-size: 15px;
+    padding: 10px;
     display: flex;
     flex-flow: row nowrap;
-    justify-content: flex-start;
+    justify-content: space-between;
 }
 
 .Select-control {
-    width: 100%;
+    width: 100%  !important;
+}
+
+.rc-slider-track {
+    background-color: #fa4f56;
+}
+
+.rc-slider-dot-active, .rc-slider-dot,.rc-slider-handle{
+    border-color: #fa4f56;
+}
+
+.rc-slider-handle:hover {
+    border-color: #fa4f56;
 }
