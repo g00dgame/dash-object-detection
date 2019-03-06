@@ -538,7 +538,14 @@ def update_object_count_pie(n, current_time, footage, threshold):
     layout = go.Layout(
         showlegend=True,
         paper_bgcolor='rgb(249,249,249)',
-        plot_bgcolor='rgb(249,249,249)'
+        plot_bgcolor='rgb(249,249,249)',
+        autosize=False,
+        margin=go.layout.Margin(
+            l=10,
+            r=10,
+            t=10,
+            b=10
+        )
     )
 
     if current_time is not None:
@@ -562,12 +569,16 @@ def update_object_count_pie(n, current_time, footage, threshold):
 
             text = [f"{count} detected" for count in counts]
 
+            # set colorscale to piechart
+            colorscale = ['#fa4f56', '#fe6767', '#ff7c79', '#ff908b', '#ffa39d', '#ffb6b0', '#ffc8c3', '#ffdbd7', '#ffedeb', '#ffffff']
+
             pie = go.Pie(
                 labels=classes,
                 values=counts,
                 text=text,
                 hoverinfo="text+percent",
-                textinfo="label+percent"
+                textinfo="label+percent",
+                marker={'colors': colorscale[:len(classes)]}
             )
             return go.Figure(data=[pie], layout=layout)
 
@@ -674,7 +685,7 @@ def update_heatmap_confidence(n, current_time, footage, threshold):
                      'autosize': False,
                      'paper_bgcolor': 'rgb(249,249,249)',
                      'plot_bgcolor': 'rgb(249,249,249)',
-                     'margin': {'l': 2, 'r': 2, 'b': 2, 't': 2, 'pad': 2},
+                     'margin': {'l': 2, 'r': 2, 'b': 10, 't': 10, 'pad': 2},
                      'annotations': annotation,
                      'xaxis': {'showticklabels': False, 'showgrid': False, 'side': 'top', 'ticks': ''},
                      'yaxis': {'showticklabels': False, 'showgrid': False, 'side': 'left', 'ticks': ''}
