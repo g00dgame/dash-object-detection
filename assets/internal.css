@@ -24,6 +24,7 @@ p {
     width: 34.6666666667%;
 }
 
+
 .model {
     display: block; /*Hidden by default */
     position: fixed; /* Stay in place */
@@ -37,13 +38,29 @@ p {
     background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
 }
 
+.close-container {
+    display: inline-block;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.marker-container {
+    width: 100%;
+    margin: 0;
+    padding: 0px 10px;
+}
+
+
 .closeButton {
-    cursor: pointer;
     padding: 0 15px;
     font-weight: normal;
     float: right;
-    text-overflow: ellipsis;
     font-size: 1.2rem;
+}
+
+.closeButton:hover{
+    color: red; !important
 }
 
 #header-section {
@@ -61,7 +78,7 @@ p {
     color: #FFFFFF;
     font-size: 13px;
     height: 30px;
-    font-weight: 600;
+    font-weight: 500;
     padding: 5px 25px 30px 25px;
     line-height: 30px;
     font-family: 'Raleway', sans-serif;

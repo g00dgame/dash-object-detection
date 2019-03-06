@@ -1,18 +1,14 @@
-import os
 from textwrap import dedent
 
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+import dash_player as player
 import numpy as np
 import pandas as pd
 import plotly.graph_objs as go
-import plotly.figure_factory as ff
 from dash.dependencies import Input, Output, State
 
-import dash_player as player
-from utils.coco_colors import STANDARD_COLORS
-import utils.dash_reusable_components as drc
 
 DEBUG = True
 FRAMERATE = 24.0
@@ -63,61 +59,58 @@ def load_data(path):
     return data_dict
 
 
-# def markdown_popup():
-#     return html.Div(
-#         id='markdown',
-#         className="model",
-#         style={'display': 'none'},
-#         children=(
-#             html.Div(
-#                 style={'width': '60vw', 'margin': '10% auto'},
-#                 children=[
-#                     html.Div(
-#                         width=100,
-#                         padding=0,
-#                         margin=0,
-#                         type='flat',
-#                         children=html.Button(
-#                             "Close",
-#                             id="markdown_close",
-#                             n_clicks=0,
-#                             className="closeButton",
-#                             style={'color': 'var(--text)', 'border': 'none', 'height': '100%'}
-#                         )
-#                     ),
-#                     html.Div(
-#                         width=100,
-#                         margin=0,
-#                         padding=10,
-#                         children=[dcc.Markdown(
-#                             children=dedent(
-#                                 '''
-#                                 ##### What am I looking at?
-#                                 This app enhances visualization of objects detected using state-of-the-art Mobile Vision Neural Networks.
-#                                 Most user generated videos are dynamic and fast-paced, which might be hard to interpret. A confidence
-#                                 heatmap stays consistent through the video and intuitively displays the model predictions. The pie chart
-#                                 lets you interpret how the object classes are divided, which is useful when analyzing videos with numerous
-#                                 and differing objects.
-#
-#                                 ##### More about this dash app
-#                                 The purpose of this demo is to explore alternative visualization methods for Object Detection. Therefore,
-#                                 the visualizations, predictions and videos are not generated in real time, but done beforehand. To read
-#                                 more about it, please visit the [project repo](https://github.com/plotly/dash-object-detection).
-#
-#                                 '''
-#                             ))
-#                         ]
-#                     )
-#                 ]
-#             )
-#         )
-#     )
-#
+def markdown_popup():
+    return html.Div(
+        id='markdown',
+        className="model",
+        style={'display': 'none'},
+        children=(
+            html.Div(
+                style={'width': '60vw', 'margin': '10% auto', 'padding': '10px 15px', 'backgroundColor': '#F9F9F9',
+                       'borderRadius': '10px'},
+                children=[
+                    html.Div(
+                        className='close-container',
+                        children=html.Button(
+                            "Close",
+                            id="markdown_close",
+                            n_clicks=0,
+                            className="closeButton",
+                            style={'border': 'none', 'height': '100%'}
+                        )
+                    ),
+                    html.Div(
+                        className='marker-container',
+                        children=[dcc.Markdown(
+                            children=dedent(
+                                '''
+                                ##### What am I looking at?
+                                
+                                This app enhances visualization of objects detected using state-of-the-art Mobile Vision Neural Networks.
+                                Most user generated videos are dynamic and fast-paced, which might be hard to interpret. A confidence
+                                heatmap stays consistent through the video and intuitively displays the model predictions. The pie chart
+                                lets you interpret how the object classes are divided, which is useful when analyzing videos with numerous
+                                and differing objects.
+
+                                ##### More about this dash app
+                                
+                                The purpose of this demo is to explore alternative visualization methods for Object Detection. Therefore,
+                                the visualizations, predictions and videos are not generated in real time, but done beforehand. To read
+                                more about it, please visit the [project repo](https://github.com/plotly/dash-object-detection).
+
+                                '''
+                            ))
+                        ]
+                    )
+                ]
+            )
+        )
+    )
+
 
 # Main App
 
 app.layout = html.Div(
-    className="twelve columns",
     children=[
         html.Div(
             id='top-bar',
@@ -126,15 +119,15 @@ app.layout = html.Div(
                    'height': '5px',
                    }
         ),
-        # Main app body
         html.Div(
             id='left-side-column',
             className='eight columns',
             style={'display': 'flex',
                    'flexDirection': 'column',
                    'flex': 1,
-                   'height': 'calc(100% - 5px)',
+                   'height': 'calc(100vh - 5px)',
                    'backgroundColor': '#F2F2F2',
+                   'overflow-y': 'scroll',
                    'marginLeft': '0px',
                    'justifyContent': 'space-around',
                    'alignItems': 'center'},
@@ -154,7 +147,7 @@ app.layout = html.Div(
                     ]
                 ),
                 html.Div(
-                    style={'width': '70%', 'marginTop': '2%', 'marginBottom': '2%', 'minWidth': '500px'},
+                    style={'width': '65%', 'marginTop': '2%', 'marginBottom': '2%', 'minWidth': '500px'},
                     children=html.Div(
                         style={'width': '100%', 'paddingBottom': '56.25%', 'position': 'relative'},
                         children=player.DashPlayer(
@@ -182,7 +175,7 @@ app.layout = html.Div(
                                     min=20,
                                     max=80,
                                     marks={i: f'{i}%' for i in range(20, 81, 10)},
-                                    value=50,
+                                    value=30,
                                     updatemode='drag'
                                 ), style={'width': '60%'})
                             ]
@@ -257,9 +250,8 @@ app.layout = html.Div(
             className='four columns',
             style={
                 'float': 'right',
-                'height': 'calc(100% - 5px)',
+                'height': 'calc(100vh - 5px)',
                 'overflow-y': 'scroll',
-                'border': '1px solid black',
                 'marginLeft': '0px',
                 'display': 'flex',
                 'backgroundColor': '#F9F9F9',
@@ -272,13 +264,12 @@ app.layout = html.Div(
                         style={'height': '100%', 'margin': '2px'},
                         src="https://s3-us-west-1.amazonaws.com/plotly-tutorials/logo/new-branding/dash-logo-by-plotly-stripe.png")
                 ),
-                html.Div(id="output")
-                # html.Div(id="div-visual-mode"),
-                # html.Div(id="div-detection-mode")
+                html.Div(id="div-visual-mode"),
+                html.Div(id="div-detection-mode")
             ]
-        )
+        ),
+        markdown_popup()
     ]
-    # markdown_popup()
 )
 
 
@@ -337,16 +328,17 @@ def select_footage(footage, display_mode):
     return url
 
 
-# # Learn more popup
-# @app.callback(Output("markdown", "style"),
-#               [Input("learn-more-button", "n_clicks"), Input("markdown_close", "n_clicks")])
-# def update_click_output(button_click, close_click):
-#     if button_click > close_click:
-#         return {"display": "block"}
-#     else:
-#         return {"display": "none"}
+# Learn more popup
+@app.callback(Output("markdown", "style"),
+              [Input("learn-more-button", "n_clicks"), Input("markdown_close", "n_clicks")])
+def update_click_output(button_click, close_click):
+    if button_click > close_click:
+        return {"display": "block"}
+    else:
+        return {"display": "none"}
 
-@app.callback(Output("output", "children"),
+
+@app.callback(Output("div-visual-mode", "children"),
               [Input("dropdown-graph-view-mode", "value")])
 def update_output(dropdown_value):
     if dropdown_value == "visual":
@@ -362,23 +354,26 @@ def update_output(dropdown_value):
                            className='plot-title'),
                     dcc.Graph(
                         id="heatmap-confidence",
-                        style={'backgroundColor': '#F9F9F9', 'border': '1px solid black', 'height': '40vh',
-                               'width': '100%'}
-                    )
-                ]
-            ),
-            html.Div(
-                children=[
+                        style={'height': '45vh', 'width': '100%'}),
+
                     html.P(children="Object Count",
                            className='plot-title'),
                     dcc.Graph(
                         id="pie-object-count",
-                        style={'backgroundColor': '#F9F9F9', 'height': '40vh', 'width': '100%'}
+                        style={'height': '40vh', 'width': '100%'}
                     )
+
                 ]
             )
         ]
     else:
+        return []
+
+
+@app.callback(Output("div-detection-mode", "children"),
+              [Input("dropdown-graph-view-mode", "value")])
+def update_detection_mode(value):
+    if value == "detection":
         return [
             dcc.Interval(
                 id="interval-detection-mode",
@@ -391,75 +386,13 @@ def update_output(dropdown_value):
                            className='plot-title'),
                     dcc.Graph(
                         id="bar-score-graph",
-                        style={'backgroundColor': '#F9F9F9'}
+                        style={'height': '55vh'}
                     )
                 ]
             )
         ]
-
-
-# # Graph View Selection
-# # @app.callback(Output("div-visual-mode", "children"),
-# #               [Input("dropdown-graph-view-mode", "value")])
-# def update_visual_mode(value):
-#     if value == "visual":
-#         return [
-#             dcc.Interval(
-#                 id="interval-visual-mode",
-#                 interval=700,
-#                 n_intervals=0
-#             ),
-#             html.Div(
-#                 children=[
-#                     html.P(children="Confidence Level of Object Presence",
-#                            className='plot-title'),
-#                     dcc.Graph(
-#                         id="heatmap-confidence",
-#                         style={'backgroundColor': '#F9F9F9', 'border': '1px solid black', 'height': '45vh'}
-#                     )
-#                 ]
-#             ),
-#
-#             html.Div(
-#                 children=[
-#                     html.P(children="Object Count",
-#                            className='plot-title'),
-#                     dcc.Graph(
-#                         id="pie-object-count",
-#                         style={'backgroundColor': '#F9F9F9', 'height': '45vh'}
-#                     )
-#                 ]
-#             )
-#         ]
-#     else:
-#         return []
-#
-#
-# #
-#
-# # @app.callback(Output("div-detection-mode", "children"),
-# #               [Input("dropdown-graph-view-mode", "value")])
-# def update_detection_mode(value):
-#     if value == "detection":
-#         return [
-#             dcc.Interval(
-#                 id="interval-detection-mode",
-#                 interval=700,
-#                 n_intervals=0
-#             ),
-#             html.Div(
-#                 children=[
-#                     html.P(children="Detection Score of Most Probable Objects",
-#                            className='plot-title'),
-#                     dcc.Graph(
-#                         id="bar-score-graph",
-#                         style={'backgroundColor': '#F9F9F9'}
-#                     )
-#                 ]
-#             )
-#         ]
-#     else:
-#         return []
+    else:
+        return []
 
 
 # Updating Figures
@@ -521,9 +454,13 @@ def update_score_bar(n, current_time, footage, threshold):
                           'marker': {'color': colors},
                           'y': frame_df["score"].tolist()}],
                 'layout': {'showlegend': False,
+                           'autosize': False,
+                           'paper_bgcolor': 'rgb(249,249,249)',
+                           'plot_bgcolor': 'rgb(249,249,249)',
                            'xaxis': {'automargin': True, 'tickangle': -45},
                            'yaxis': {'automargin': True, 'range': [0, 1], 'title': {'text': 'Score'}}}
-            })
+                }
+            )
             return figure
 
     return go.Figure(data=[go.Bar()], layout=layout)  # Returns empty bar
@@ -543,8 +480,8 @@ def update_object_count_pie(n, current_time, footage, threshold):
         margin=go.layout.Margin(
             l=10,
             r=10,
-            t=10,
-            b=10
+            t=15,
+            b=15
         )
     )
 
@@ -569,8 +506,9 @@ def update_object_count_pie(n, current_time, footage, threshold):
 
             text = [f"{count} detected" for count in counts]
 
-            # set colorscale to piechart
-            colorscale = ['#fa4f56', '#fe6767', '#ff7c79', '#ff908b', '#ffa39d', '#ffb6b0', '#ffc8c3', '#ffdbd7', '#ffedeb', '#ffffff']
+            # Set colorscale to piechart
+            colorscale = ['#fa4f56', '#fe6767', '#ff7c79', '#ff908b', '#ffa39d', '#ffb6b0', '#ffc8c3', '#ffdbd7',
+                          '#ffedeb', '#ffffff']
 
             pie = go.Pie(
                 labels=classes,
@@ -597,11 +535,11 @@ def update_heatmap_confidence(n, current_time, footage, threshold):
         plot_bgcolor='rgb(249,249,249)',
         autosize=False,
         margin=go.layout.Margin(
-            l=2,
-            r=2,
-            b=2,
-            t=2,
-            pad=2
+            l=10,
+            r=10,
+            b=20,
+            t=20,
+            pad=4
         )
     )
 
@@ -685,7 +623,7 @@ def update_heatmap_confidence(n, current_time, footage, threshold):
                      'autosize': False,
                      'paper_bgcolor': 'rgb(249,249,249)',
                      'plot_bgcolor': 'rgb(249,249,249)',
-                     'margin': {'l': 2, 'r': 2, 'b': 10, 't': 10, 'pad': 2},
+                     'margin': {'l': 10, 'r': 10, 'b': 20, 't': 20, 'pad': 2},
                      'annotations': annotation,
                      'xaxis': {'showticklabels': False, 'showgrid': False, 'side': 'top', 'ticks': ''},
                      'yaxis': {'showticklabels': False, 'showgrid': False, 'side': 'left', 'ticks': ''}
