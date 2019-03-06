@@ -1,7 +1,27 @@
 /* Remove Undo
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 ._dash-undo-redo {
-  display: none;
+    display: none;
+}
+
+body {
+    margin: 0 !important;
+    color: #606060 !important;
+    font-family: 'Raleway', sans-serif;
+}
+
+h4 {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+}
+
+p {
+    font-size: 17px;
+    font-weight: 300;
+}
+
+.four.columns {
+    width: 34.6666666667%;
 }
 
 .model {
@@ -28,7 +48,23 @@
 
 #header-section {
     width: 90%;
-    border: 1px solid red;
+    margin-top: 5px;
+}
+
+.button:focus {
+    color: #FFFFFF;
+    border-color: #bbb;
+}
+
+#learn-more-button {
+    background-color: #fa4f56;
+    color: #FFFFFF;
+    font-size: 13px;
+    height: 30px;
+    font-weight: 600;
+    padding: 5px 25px 30px 25px;
+    line-height: 30px;
+    font-family: 'Raleway', sans-serif;
 }
 
 .control-section {
@@ -43,21 +79,41 @@
     padding: 10px;
     display: flex;
     flex-flow: row nowrap;
-    justify-content: space-between;
 }
 
 .Select-control {
-    width: 100%  !important;
+    width: 100% !important;
+}
+
+.Select-menu-outer {
+   position: relative;
+}
+
+.has-value.Select--single > .Select-control .Select-value .Select-value-label, .has-value.is-pseudo-focused.Select--single > .Select-control .Select-value .Select-value-label {
+    color: #606060;
 }
 
 .rc-slider-track {
     background-color: #fa4f56;
 }
 
-.rc-slider-dot-active, .rc-slider-dot,.rc-slider-handle{
+.rc-slider-dot-active, .rc-slider-dot, .rc-slider-handle {
     border-color: #fa4f56;
 }
 
 .rc-slider-handle:hover {
     border-color: #fa4f56;
+}
+
+.img-container {
+    border-color: black;
+    display: flex;
+    justify-content: flex-end;
+    height: 40px;
+}
+
+.plot-title {
+    margin-left: 5%;
+    margin-bottom: 0px;
+    font-weight: 500;
 }
