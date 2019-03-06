@@ -128,7 +128,7 @@ app.layout = html.Div(
                    'backgroundColor': '#F2F2F2',
                    'overflow-y': 'scroll',
                    'marginLeft': '0px',
-                   'justifyContent': 'flex-start',
+                   'justifyContent': 'center',
                    'alignItems': 'center'},
             children=[
                 html.Div(

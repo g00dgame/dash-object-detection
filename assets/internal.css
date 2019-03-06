@@ -73,7 +73,7 @@ p {
 
 #header-section {
     width: 90%;
-    margin-top: 5px;
+    margin-top: 2%;
 }
 
 .button:focus {
@@ -104,6 +104,8 @@ p {
     display: flex;
     flex-flow: column nowrap;
     padding: 5px;
+    flex-shrink: 0;
+    margin-bottom: 2%;
 }
 
 .control-element {
