@@ -66,8 +66,7 @@ def markdown_popup():
         style={'display': 'none'},
         children=(
             html.Div(
-                style={'width': '60vw', 'margin': '10% auto', 'padding': '10px 15px', 'backgroundColor': '#F9F9F9',
-                       'borderRadius': '10px'},
+                className="markdown-container",
                 children=[
                     html.Div(
                         className='close-container',
@@ -80,7 +79,7 @@ def markdown_popup():
                         )
                     ),
                     html.Div(
-                        className='marker-container',
+                        className='markdown-text',
                         children=[dcc.Markdown(
                             children=dedent(
                                 '''
@@ -129,7 +128,7 @@ app.layout = html.Div(
                    'backgroundColor': '#F2F2F2',
                    'overflow-y': 'scroll',
                    'marginLeft': '0px',
-                   'justifyContent': 'space-around',
+                   'justifyContent': 'flex-start',
                    'alignItems': 'center'},
             children=[
                 html.Div(
@@ -147,7 +146,7 @@ app.layout = html.Div(
                     ]
                 ),
                 html.Div(
-                    style={'width': '65%', 'marginTop': '2%', 'marginBottom': '2%', 'minWidth': '500px'},
+                    className='video-outer-container',
                     children=html.Div(
                         style={'width': '100%', 'paddingBottom': '56.25%', 'position': 'relative'},
                         children=player.DashPlayer(

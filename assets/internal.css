@@ -16,7 +16,7 @@ h4 {
 }
 
 p {
-    font-size: 17px;
+    font-size: 16px;
     font-weight: 300;
 }
 
@@ -38,6 +38,14 @@ p {
     background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
 }
 
+.markdown-container {
+    width: 60vw;
+    margin: 10% auto;
+    padding: 10px 15px;
+    background-color: #F9F9F9;
+    border-radius: 10px;
+}
+
 .close-container {
     display: inline-block;
     width: 100%;
@@ -45,7 +53,7 @@ p {
     padding: 0;
 }
 
-.marker-container {
+.markdown-text {
     width: 100%;
     margin: 0;
     padding: 0px 10px;
@@ -59,7 +67,7 @@ p {
     font-size: 1.2rem;
 }
 
-.closeButton:hover{
+.closeButton:hover {
     color: red; !important
 }
 
@@ -84,6 +92,13 @@ p {
     font-family: 'Raleway', sans-serif;
 }
 
+.video-outer-container {
+    width: 65%;
+    margin-top: 2%;
+    margin-bottom: 2%;
+    min-width: 500px;
+}
+
 .control-section {
     width: 85%;
     display: flex;
@@ -103,7 +118,7 @@ p {
 }
 
 .Select-menu-outer {
-   position: relative;
+    position: relative;
 }
 
 .has-value.Select--single > .Select-control .Select-value .Select-value-label, .has-value.is-pseudo-focused.Select--single > .Select-control .Select-value .Select-value-label {
