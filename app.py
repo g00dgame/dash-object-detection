@@ -583,7 +583,15 @@ def update_heatmap_confidence(n, current_time, footage, threshold):
     layout = go.Layout(
         showlegend=False,
         paper_bgcolor='rgb(249,249,249)',
-        plot_bgcolor='rgb(249,249,249)'
+        plot_bgcolor='rgb(249,249,249)',
+        autosize=False,
+        margin=go.layout.Margin(
+            l=2,
+            r=2,
+            b=2,
+            t=2,
+            pad=2
+        )
     )
 
     if current_time is not None:
@@ -648,7 +656,8 @@ def update_heatmap_confidence(n, current_time, footage, threshold):
                     annotation.append(annotation_dict)
 
             # Generate heatmap figure
-            return {
+
+            figure = {
                 'data': [
                     {'colorscale': colorscale,
                      'showscale': False,
@@ -661,12 +670,18 @@ def update_heatmap_confidence(n, current_time, footage, threshold):
                      'ygap': 1,
                      'z': score_matrix}],
                 'layout':
-                    {
-                        'annotations': annotation,
-                        'xaxis': {'showticklabels': False, 'showgrid': False, 'side': 'top', 'ticks': ''},
-                        'yaxis': {'showticklabels': False, 'showgrid': False, 'side': 'left', 'ticks': ''}
-                    }
+                    {'showlegend': False,
+                     'autosize': False,
+                     'paper_bgcolor': 'rgb(249,249,249)',
+                     'plot_bgcolor': 'rgb(249,249,249)',
+                     'margin': {'l': 2, 'r': 2, 'b': 2, 't': 2, 'pad': 2},
+                     'annotations': annotation,
+                     'xaxis': {'showticklabels': False, 'showgrid': False, 'side': 'top', 'ticks': ''},
+                     'yaxis': {'showticklabels': False, 'showgrid': False, 'side': 'left', 'ticks': ''}
+                     }
             }
+
+            return figure
 
     # Returns empty figure
     return go.Figure(data=[go.Pie()], layout=layout)
