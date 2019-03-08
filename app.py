@@ -585,13 +585,25 @@ def update_heatmap_confidence(n, current_time, footage, threshold):
             hover_text = np.reshape(hover_text, (-1, int(root_round)))
             hover_text = np.flip(hover_text, axis=0)
 
+            # Add linebreak for multi-word annotation
+            new_array = np.empty(shape=(int(root_round), int(root_round)), dtype='|U40')
+
+            for index, row in enumerate(classes_matrix):
+                row_split = [x.split() for x in row.tolist()]
+
+                for ind, item in enumerate(row_split):
+                    row_split[ind] = '<br>'.join(item)
+
+                row = np.asarray(row_split, dtype='|U40')
+                new_array[index] = row
+
             # Set up annotation text
             annotation = []
             for y_cord in range(int(root_round)):
                 for x_cord in range(int(root_round)):
                     annotation_dict = dict(
                         showarrow=False,
-                        text=classes_matrix[y_cord][x_cord],
+                        text=new_array[y_cord][x_cord],
                         xref='x',
                         yref='y',
                         x=x_cord,
