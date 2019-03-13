@@ -8,6 +8,7 @@ body {
     margin: 0 !important;
     color: #606060 !important;
     font-family: 'Raleway', sans-serif;
+    background-color: #F9F9F9 !important;
 }
 
 h4 {
@@ -20,10 +21,9 @@ p {
     font-weight: 300;
 }
 
-.four.columns {
-    width: 34.6666666667%;
-}
-
+/*.four.columns {*/
+    /*width: 32.6666666667% !important;*/
+/*}*/
 
 .model {
     display: block; /*Hidden by default */

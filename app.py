@@ -119,6 +119,9 @@ app.layout = html.Div(
                    }
         ),
         html.Div(
+            className='container',
+            children=[
+        html.Div(
             id='left-side-column',
             className='eight columns',
             style={'display': 'flex',
@@ -248,10 +251,9 @@ app.layout = html.Div(
             id='right-side-column',
             className='four columns',
             style={
-                'float': 'right',
                 'height': 'calc(100vh - 5px)',
                 'overflow-y': 'scroll',
-                'marginLeft': '0px',
+                'marginLeft': '1%',
                 'display': 'flex',
                 'backgroundColor': '#F9F9F9',
                 'flexDirection': 'column'
@@ -266,7 +268,7 @@ app.layout = html.Div(
                 html.Div(id="div-visual-mode"),
                 html.Div(id="div-detection-mode")
             ]
-        ),
+        )]),
         markdown_popup()
     ]
 )
