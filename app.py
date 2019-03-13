@@ -1,36 +1,20 @@
-import os
 from textwrap import dedent
 
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+import dash_player as player
 import numpy as np
 import pandas as pd
 import plotly.graph_objs as go
-import plotly.figure_factory as ff
-from PIL import ImageColor
 from dash.dependencies import Input, Output, State
-
-import video_engine as rpd
-from utils.coco_colors import STANDARD_COLORS
-import utils.dash_reusable_components as drc
 
 
 DEBUG = True
 FRAMERATE = 24.0
 
-
 app = dash.Dash(__name__)
 server = app.server
-
-
-# Custom Script for Heroku
-if 'DYNO' in os.environ:
-    app.scripts.config.serve_locally = False
-    app.scripts.append_script({
-        'external_url': 'https://cdn.rawgit.com/chriddyp/ca0d8f02a1659981a0ea7f013a378bbd/raw/e79f3f789517deec58f41251f7dbb6bee72c44ab/plotly_ga.js'
-    })
-
 
 app.scripts.config.serve_locally = True
 app.config['suppress_callback_exceptions'] = True
@@ -75,137 +59,219 @@ def load_data(path):
     return data_dict
 
 
-# Main App
-app.layout = html.Div([
-    # Banner display
-    html.Div([
-        html.H2(
-            'Object Detection Explorer',
-            id='title'
-        ),
-        html.Img(
-            src="https://s3-us-west-1.amazonaws.com/plotly-tutorials/logo/new-branding/dash-logo-by-plotly-stripe-inverted.png"
+def markdown_popup():
+    return html.Div(
+        id='markdown',
+        className="model",
+        style={'display': 'none'},
+        children=(
+            html.Div(
+                className="markdown-container",
+                children=[
+                    html.Div(
+                        className='close-container',
+                        children=html.Button(
+                            "Close",
+                            id="markdown_close",
+                            n_clicks=0,
+                            className="closeButton",
+                            style={'border': 'none', 'height': '100%'}
+                        )
+                    ),
+                    html.Div(
+                        className='markdown-text',
+                        children=[dcc.Markdown(
+                            children=dedent(
+                                '''
+                                ##### What am I looking at?
+                                
+                                This app enhances visualization of objects detected using state-of-the-art Mobile Vision Neural Networks.
+                                Most user generated videos are dynamic and fast-paced, which might be hard to interpret. A confidence
+                                heatmap stays consistent through the video and intuitively displays the model predictions. The pie chart
+                                lets you interpret how the object classes are divided, which is useful when analyzing videos with numerous
+                                and differing objects.
+
+                                ##### More about this dash app
+                                
+                                The purpose of this demo is to explore alternative visualization methods for Object Detection. Therefore,
+                                the visualizations, predictions and videos are not generated in real time, but done beforehand. To read
+                                more about it, please visit the [project repo](https://github.com/plotly/dash-object-detection).
+
+                                '''
+                            ))
+                        ]
+                    )
+                ]
+            )
         )
-    ],
-        className="banner",
-    ),
-
-    # Body
-    html.Div([
-        html.Div([
-            html.Div([
-                html.Div([
-                    rpd.my_Player()
-                ],
-                    id='div-video-player',
-                    style={
-                        'color': 'rgb(255, 255, 255)',
-                        'margin-bottom': '-30px'
-                    }
-                ),
-
-                html.Div([
-                    "Minimum Confidence Threshold:",
-                    dcc.Slider(
-                        min=20,
-                        max=80,
-                        marks={i: f'{i}%' for i in range(20, 81, 10)},
-                        value=50,
-                        updatemode='drag',
-                        id='slider-minimum-confidence-threshold'
-                    )
-                ],
-                    style={'margin': '15px 30px 30px 30px'}  # top right bottom left
-                ),
-
-                html.Div([
-                    "Footage Selection:",
-                    dcc.Dropdown(
-                        options=[
-                            {'label': 'Drone recording of canal festival', 'value': 'DroneCanalFestival'},
-                            {'label': 'Drone recording of car festival', 'value': 'car_show_drone'},
-                            {'label': 'Drone recording of car festival #2', 'value': 'DroneCarFestival2'},
-                            {'label': 'Drone recording of a farm', 'value': 'FarmDrone'},
-                            {'label': 'Lion fighting Zebras', 'value': 'zebra'},
-                            {'label': 'Man caught by a CCTV', 'value': 'ManCCTV'},
-                            {'label': 'Man driving expensive car', 'value': 'car_footage'},
-                            {'label': 'Restaurant Robbery', 'value': 'RestaurantHoldup'}
-                        ],
-                        value='car_show_drone',
-                        id="dropdown-footage-selection",
-                        clearable=False
-                    )
-                ],
-                    style={'margin': '30px 20px 15px 20px'}  # top right bottom left
-                ),
-
-                html.Div([
-                    "Video Display Mode:",
-                    dcc.Dropdown(
-                        options=[
-                            {'label': 'Regular Display', 'value': 'regular'},
-                            {'label': 'Display with Bounding Boxes', 'value': 'bounding_box'},
-                        ],
-                        value='bounding_box',
-                        id="dropdown-video-display-mode",
-                        searchable=False,
-                        clearable=False
-                    )
-                ],
-                    style={'margin': '15px 20px 15px 20px'}  # top right bottom left
-                ),
-
-                html.Div([
-                    "Graph View Mode:",
-                    dcc.Dropdown(
-                        options=[
-                            {'label': 'Visual Mode', 'value': 'visual'},
-                            {'label': 'Detection Mode', 'value': 'detection'}
-                        ],
-                        value='visual',
-                        id="dropdown-graph-view-mode",
-                        searchable=False,
-                        clearable=False
-                    )
-                ],
-                    style={'margin': '15px 20px 15px 20px'}  # top right bottom left
-                ),
-            ],
-                className="six columns",
-                style={'margin-bottom': '20px'}
-            ),
-
-            html.Div(id="div-visual-mode", className="six columns"),
-
-            html.Div(id="div-detection-mode", className="six columns")
-        ],
-            className="row"
-        ),
-
-        drc.DemoDescriptionCard(
-            '''
-            ## Getting Started with the Demo
-            To get started, select a footage you want to view, and choose the display mode (with or without
-            bounding boxes). Then, you can start playing the video, and the visualization will be displayed depending
-            on the current time.
-
-            ## What am I looking at?
-            This app enhances visualization of objects detected using state-of-the-art Mobile Vision Neural Networks.
-            Most user generated videos are dynamic and fast-paced, which might be hard to interpret. A confidence
-            heatmap stays consistent through the video and intuitively displays the model predictions. The pie chart
-            lets you interpret how the object classes are divided, which is useful when analyzing videos with numerous
-            and differing objects.
-
-            The purpose of this demo is to explore alternative visualization methods for Object Detection. Therefore,
-            the visualizations, predictions and videos are not generated in real time, but done beforehand. To read
-            more about it, please visit the
-            [project repo](https://github.com/plotly/dash-object-detection).
-            '''
-        )
-    ],
-        className="container scalable"
     )
-])
+
+
+# Main App
+
+app.layout = html.Div(
+    children=[
+        html.Div(
+            id='top-bar',
+            className='row',
+            style={'backgroundColor': '#fa4f56',
+                   'height': '5px',
+                   }
+        ),
+        html.Div(
+            className='container',
+            children=[
+        html.Div(
+            id='left-side-column',
+            className='eight columns',
+            style={'display': 'flex',
+                   'flexDirection': 'column',
+                   'flex': 1,
+                   'height': 'calc(100vh - 5px)',
+                   'backgroundColor': '#F2F2F2',
+                   'overflow-y': 'scroll',
+                   'marginLeft': '0px',
+                   'justifyContent': 'flex-start',
+                   'alignItems': 'center'},
+            children=[
+                html.Div(
+                    id='header-section',
+                    children=[
+                        html.H4(
+                            'Object Detection Explorer'
+                        ),
+                        html.P(
+                            'To get started, select a footage you want to view, and choose the display mode (with or without'
+                            ' bounding boxes). Then, you can start playing the video, and the visualization will '
+                            'be displayed depending on the current time.'
+                        ),
+                        html.Button("Learn More", id="learn-more-button", n_clicks=0)
+                    ]
+                ),
+                html.Div(
+                    className='video-outer-container',
+                    children=html.Div(
+                        style={'width': '100%', 'paddingBottom': '56.25%', 'position': 'relative'},
+                        children=player.DashPlayer(
+                            id='video-display',
+                            style={'position': 'absolute', 'width': '100%',
+                                   'height': '100%', 'top': '0', 'left': '0', 'bottom': '0', 'right': '0'},
+                            url='https://www.youtube.com/watch?v=gPtn6hD7o8g',
+                            controls=True,
+                            playing=False,
+                            volume=1,
+                            width='100%',
+                            height='100%'
+                        )
+                    )
+                ),
+                html.Div(
+                    className='control-section',
+                    children=[
+                        html.Div(
+                            className='control-element',
+                            children=[
+                                html.Div(children=["Minimum Confidence Threshold:"], style={'width': '40%'}),
+                                html.Div(dcc.Slider(
+                                    id='slider-minimum-confidence-threshold',
+                                    min=20,
+                                    max=80,
+                                    marks={i: f'{i}%' for i in range(20, 81, 10)},
+                                    value=30,
+                                    updatemode='drag'
+                                ), style={'width': '60%'})
+                            ]
+                        ),
+
+                        html.Div(
+                            className='control-element',
+                            children=[
+                                html.Div(children=["Footage Selection:"], style={'width': '40%'}),
+                                dcc.Dropdown(
+                                    id="dropdown-footage-selection",
+                                    options=[
+                                        {'label': 'Drone recording of canal festival',
+                                         'value': 'DroneCanalFestival'},
+                                        {'label': 'Drone recording of car festival', 'value': 'car_show_drone'},
+                                        {'label': 'Drone recording of car festival #2',
+                                         'value': 'DroneCarFestival2'},
+                                        {'label': 'Drone recording of a farm', 'value': 'FarmDrone'},
+                                        {'label': 'Lion fighting Zebras', 'value': 'zebra'},
+                                        {'label': 'Man caught by a CCTV', 'value': 'ManCCTV'},
+                                        {'label': 'Man driving expensive car', 'value': 'car_footage'},
+                                        {'label': 'Restaurant Robbery', 'value': 'RestaurantHoldup'}
+                                    ],
+                                    value='car_show_drone',
+                                    clearable=False,
+                                    style={'width': '60%'}
+                                )
+                            ]
+                        ),
+
+                        html.Div(
+                            className='control-element',
+                            children=[
+                                html.Div(children=["Video Display Mode:"], style={'width': '40%'}),
+                                dcc.Dropdown(
+                                    id="dropdown-video-display-mode",
+                                    options=[
+                                        {'label': 'Regular Display', 'value': 'regular'},
+                                        {'label': 'Display with Bounding Boxes', 'value': 'bounding_box'},
+                                    ],
+                                    value='bounding_box',
+                                    searchable=False,
+                                    clearable=False,
+                                    style={'width': '60%'}
+                                )
+                            ]
+                        ),
+
+                        html.Div(
+                            className='control-element',
+                            children=[
+                                html.Div(children=["Graph View Mode:"], style={'width': '40%'}),
+                                dcc.Dropdown(
+                                    id="dropdown-graph-view-mode",
+                                    options=[
+                                        {'label': 'Visual Mode', 'value': 'visual'},
+                                        {'label': 'Detection Mode', 'value': 'detection'}
+                                    ],
+                                    value='visual',
+                                    searchable=False,
+                                    clearable=False,
+                                    style={'width': '60%'}
+                                )
+                            ]
+                        )
+                    ]
+                )
+            ]
+        ),
+        html.Div(
+            id='right-side-column',
+            className='four columns',
+            style={
+                'height': 'calc(100vh - 5px)',
+                'overflow-y': 'scroll',
+                'marginLeft': '1%',
+                'display': 'flex',
+                'backgroundColor': '#F9F9F9',
+                'flexDirection': 'column'
+            },
+            children=[
+                html.Div(
+                    className='img-container',
+                    children=html.Img(
+                        style={'height': '100%', 'margin': '2px'},
+                        src="https://s3-us-west-1.amazonaws.com/plotly-tutorials/logo/new-branding/dash-logo-by-plotly-stripe.png")
+                ),
+                html.Div(id="div-visual-mode"),
+                html.Div(id="div-detection-mode")
+            ]
+        )]),
+        markdown_popup()
+    ]
+)
 
 
 # Data Loading
@@ -254,49 +320,53 @@ def load_all_footage():
 
 
 # Footage Selection
-@app.callback(Output("div-video-player", "children"),
+@app.callback(Output("video-display", "url"),
               [Input('dropdown-footage-selection', 'value'),
                Input('dropdown-video-display-mode', 'value')])
 def select_footage(footage, display_mode):
-    url = url_dict[display_mode][footage]  # Find desired footage
-
-    return [
-        rpd.my_Player(
-            id='video-display',
-            url=url,
-            width='100%',
-            height='50vh',
-            controls=True,
-            playing=False,
-            seekTo=0,
-            volume=1
-        )
-    ]
+    # Find desired footage and update player video
+    url = url_dict[display_mode][footage]
+    return url
 
 
-# Graph View Selection
+# Learn more popup
+@app.callback(Output("markdown", "style"),
+              [Input("learn-more-button", "n_clicks"), Input("markdown_close", "n_clicks")])
+def update_click_output(button_click, close_click):
+    if button_click > close_click:
+        return {"display": "block"}
+    else:
+        return {"display": "none"}
+
+
 @app.callback(Output("div-visual-mode", "children"),
               [Input("dropdown-graph-view-mode", "value")])
-def update_visual_mode(value):
-    if value == "visual":
+def update_output(dropdown_value):
+    if dropdown_value == "visual":
         return [
             dcc.Interval(
                 id="interval-visual-mode",
                 interval=700,
                 n_intervals=0
             ),
+            html.Div(
+                children=[
+                    html.P(children="Confidence Level of Object Presence",
+                           className='plot-title'),
+                    dcc.Graph(
+                        id="heatmap-confidence",
+                        style={'height': '45vh', 'width': '100%'}),
 
-            dcc.Graph(
-                style={'height': '55vh'},
-                id="heatmap-confidence"
-            ),
+                    html.P(children="Object Count",
+                           className='plot-title'),
+                    dcc.Graph(
+                        id="pie-object-count",
+                        style={'height': '40vh', 'width': '100%'}
+                    )
 
-            dcc.Graph(
-                style={'height': '40vh'},
-                id="pie-object-count"
+                ]
             )
         ]
-
     else:
         return []
 
@@ -311,10 +381,15 @@ def update_detection_mode(value):
                 interval=700,
                 n_intervals=0
             ),
-
-            dcc.Graph(
-                style={'height': '50vh'},
-                id="bar-score-graph"
+            html.Div(
+                children=[
+                    html.P(children="Detection Score of Most Probable Objects",
+                           className='plot-title'),
+                    dcc.Graph(
+                        id="bar-score-graph",
+                        style={'height': '55vh'}
+                    )
+                ]
             )
         ]
     else:
@@ -324,17 +399,21 @@ def update_detection_mode(value):
 # Updating Figures
 @app.callback(Output("bar-score-graph", "figure"),
               [Input("interval-detection-mode", "n_intervals")],
-              [State("video-display", "currTime"),
+              [State("video-display", "currentTime"),
                State('dropdown-footage-selection', 'value'),
                State('slider-minimum-confidence-threshold', 'value')])
 def update_score_bar(n, current_time, footage, threshold):
     layout = go.Layout(
-        title='Detection Score of Most Probable Objects',
         showlegend=False,
-        margin=go.Margin(l=70, r=40, t=50, b=30),
+        paper_bgcolor='rgb(249,249,249)',
+        plot_bgcolor='rgb(249,249,249)',
+        xaxis={
+            'automargin': True,
+        },
         yaxis={
             'title': 'Score',
-            'range': [0,1]
+            'automargin': True,
+            'range': [0, 1]
         }
     )
 
@@ -348,7 +427,7 @@ def update_score_bar(n, current_time, footage, threshold):
             frame_df = video_info_df[video_info_df["frame"] == current_frame]
 
             # Select only the frames above the threshold
-            threshold_dec = threshold/100  # Threshold in decimal
+            threshold_dec = threshold / 100  # Threshold in decimal
             frame_df = frame_df[frame_df["score"] > threshold_dec]
 
             # Select up to 8 frames with the highest scores
@@ -362,43 +441,49 @@ def update_score_bar(n, current_time, footage, threshold):
                 object_count_dict[object] += 1  # Increment count
                 objects_wc.append(f"{object} {object_count_dict[object]}")
 
+            colors = list('rgb(250,79,86)' for i in range(len(objects_wc)))
+
             # Add text information
-            y_text = [f"{round(value*100)}% confidence" for value in frame_df["score"].tolist()]
+            y_text = [f"{round(value * 100)}% confidence" for value in frame_df["score"].tolist()]
 
-            # Convert color into rgb
-            color_map = lambda class_id: str(ImageColor.getrgb(STANDARD_COLORS[class_id % len(STANDARD_COLORS)]))
-            colors = ["rgb" + color_map(class_id) for class_id in frame_df["class"].tolist()]
-
-            bar = go.Bar(
-                x=objects_wc,
-                y=frame_df["score"].tolist(),
-                text=y_text,
-                name="Detection Scores",
-                hoverinfo="x+text",
-                marker=go.Marker(
-                    color=colors,
-                    line=dict(
-                        color='rgb(79, 85, 91)',
-                        width=1
-                    )
-                )
+            figure = go.Figure({
+                'data': [{'hoverinfo': 'x+text',
+                          'name': 'Detection Scores',
+                          'text': y_text,
+                          'type': 'bar',
+                          'x': objects_wc,
+                          'marker': {'color': colors},
+                          'y': frame_df["score"].tolist()}],
+                'layout': {'showlegend': False,
+                           'autosize': False,
+                           'paper_bgcolor': 'rgb(249,249,249)',
+                           'plot_bgcolor': 'rgb(249,249,249)',
+                           'xaxis': {'automargin': True, 'tickangle': -45},
+                           'yaxis': {'automargin': True, 'range': [0, 1], 'title': {'text': 'Score'}}}
+                }
             )
-
-            return go.Figure(data=[bar], layout=layout)
+            return figure
 
     return go.Figure(data=[go.Bar()], layout=layout)  # Returns empty bar
 
 
 @app.callback(Output("pie-object-count", "figure"),
               [Input("interval-visual-mode", "n_intervals")],
-              [State("video-display", "currTime"),
+              [State("video-display", "currentTime"),
                State('dropdown-footage-selection', 'value'),
                State('slider-minimum-confidence-threshold', 'value')])
 def update_object_count_pie(n, current_time, footage, threshold):
     layout = go.Layout(
-        title='Object Count',
         showlegend=True,
-        margin=go.Margin(l=50, r=30, t=30, b=40)
+        paper_bgcolor='rgb(249,249,249)',
+        plot_bgcolor='rgb(249,249,249)',
+        autosize=False,
+        margin=go.layout.Margin(
+            l=10,
+            r=10,
+            t=15,
+            b=15
+        )
     )
 
     if current_time is not None:
@@ -411,7 +496,7 @@ def update_object_count_pie(n, current_time, footage, threshold):
             frame_df = video_info_df[video_info_df["frame"] == current_frame]
 
             # Select only the frames above the threshold
-            threshold_dec = threshold/100  # Threshold in decimal
+            threshold_dec = threshold / 100  # Threshold in decimal
             frame_df = frame_df[frame_df["score"] > threshold_dec]
 
             # Get the count of each object class
@@ -422,14 +507,18 @@ def update_object_count_pie(n, current_time, footage, threshold):
 
             text = [f"{count} detected" for count in counts]
 
+            # Set colorscale to piechart
+            colorscale = ['#fa4f56', '#fe6767', '#ff7c79', '#ff908b', '#ffa39d', '#ffb6b0', '#ffc8c3', '#ffdbd7',
+                          '#ffedeb', '#ffffff']
+
             pie = go.Pie(
                 labels=classes,
                 values=counts,
                 text=text,
                 hoverinfo="text+percent",
-                textinfo="label+percent"
+                textinfo="label+percent",
+                marker={'colors': colorscale[:len(classes)]}
             )
-
             return go.Figure(data=[pie], layout=layout)
 
     return go.Figure(data=[go.Pie()], layout=layout)  # Returns empty pie chart
@@ -437,13 +526,22 @@ def update_object_count_pie(n, current_time, footage, threshold):
 
 @app.callback(Output("heatmap-confidence", "figure"),
               [Input("interval-visual-mode", "n_intervals")],
-              [State("video-display", "currTime"),
+              [State("video-display", "currentTime"),
                State('dropdown-footage-selection', 'value'),
                State('slider-minimum-confidence-threshold', 'value')])
 def update_heatmap_confidence(n, current_time, footage, threshold):
     layout = go.Layout(
-        title="Confidence Level of Object Presence",
-        margin=go.Margin(l=20, r=20, t=57, b=30)
+        showlegend=False,
+        paper_bgcolor='rgb(249,249,249)',
+        plot_bgcolor='rgb(249,249,249)',
+        autosize=False,
+        margin=go.layout.Margin(
+            l=10,
+            r=10,
+            b=20,
+            t=20,
+            pad=4
+        )
     )
 
     if current_time is not None:
@@ -481,48 +579,71 @@ def update_heatmap_confidence(n, current_time, footage, threshold):
 
             # We set the color scale to white if there's nothing in the frame_no_dup
             if frame_no_dup.shape != (0, 1):
-                colorscale = [[0, '#ffffff'], [1, '#f71111']]
-                font_colors = ['#3c3636', '#efecee']
+                colorscale = [[0, '#f9f9f9'], [1, '#fa4f56']]
             else:
-                colorscale = [[0, '#ffffff'], [1, '#ffffff']]
-                font_colors = ['#3c3636']
+                colorscale = [[0, '#f9f9f9'], [1, '#f9f9f9']]
 
             hover_text = [f"{score * 100:.2f}% confidence" for score in score_list]
             hover_text = np.reshape(hover_text, (-1, int(root_round)))
             hover_text = np.flip(hover_text, axis=0)
 
-            pt = ff.create_annotated_heatmap(
-                score_matrix,
-                annotation_text=classes_matrix,
-                colorscale=colorscale,
-                font_colors=font_colors,
-                hoverinfo='text',
-                text=hover_text,
-                zmin=0,
-                zmax=1
-            )
+            # Add linebreak for multi-word annotation
+            classes_matrix = classes_matrix.astype(dtype='|U40')
 
-            pt.layout.title = layout.title
-            pt.layout.margin = layout.margin
+            for index, row in enumerate(classes_matrix):
+                row = list(map(lambda x: '<br>'.join(x.split()), row))
+                classes_matrix[index] = row
 
-            return pt
+            # Set up annotation text
+            annotation = []
+            for y_cord in range(int(root_round)):
+                for x_cord in range(int(root_round)):
+                    annotation_dict = dict(
+                        showarrow=False,
+                        text=classes_matrix[y_cord][x_cord],
+                        xref='x',
+                        yref='y',
+                        x=x_cord,
+                        y=y_cord
+                    )
+                    if score_matrix[y_cord][x_cord] > 0:
+                        annotation_dict['font'] = {'color': '#F9F9F9', 'size': '11'}
+                    else:
+                        annotation_dict['font'] = {'color': '#606060', 'size': '11'}
+                    annotation.append(annotation_dict)
+
+            # Generate heatmap figure
+
+            figure = {
+                'data': [
+                    {'colorscale': colorscale,
+                     'showscale': False,
+                     'hoverinfo': 'text',
+                     'text': hover_text,
+                     'type': 'heatmap',
+                     'zmin': 0,
+                     'zmax': 1,
+                     'xgap': 1,
+                     'ygap': 1,
+                     'z': score_matrix}],
+                'layout':
+                    {'showlegend': False,
+                     'autosize': False,
+                     'paper_bgcolor': 'rgb(249,249,249)',
+                     'plot_bgcolor': 'rgb(249,249,249)',
+                     'margin': {'l': 10, 'r': 10, 'b': 20, 't': 20, 'pad': 2},
+                     'annotations': annotation,
+                     'xaxis': {'showticklabels': False, 'showgrid': False, 'side': 'top', 'ticks': ''},
+                     'yaxis': {'showticklabels': False, 'showgrid': False, 'side': 'left', 'ticks': ''}
+                     }
+            }
+
+            return figure
 
     # Returns empty figure
     return go.Figure(data=[go.Pie()], layout=layout)
 
 
-external_css = [
-    "https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css",  # Normalize the CSS
-    "https://fonts.googleapis.com/css?family=Open+Sans|Roboto"  # Fonts
-    "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css",
-    "https://cdn.rawgit.com/xhlulu/9a6e89f418ee40d02b637a429a876aa9/raw/base-styles.css",
-    "https://cdn.rawgit.com/plotly/dash-object-detection/875fdd6b/custom-styles.css"
-]
-
-for css in external_css:
-    app.css.append_css({"external_url": css})
-
-
 # Running the server
 if __name__ == '__main__':
-    app.run_server(debug=DEBUG)
+    app.run_server(dev_tools_hot_reload=False, debug=DEBUG, host='0.0.0.0')

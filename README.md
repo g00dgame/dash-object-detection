@@ -6,8 +6,7 @@ Dash abstracts away all of the technologies and protocols required to build an i
 
 Try out the [demo app here](https://dash-object-detection.plot.ly/).
 
-![Animated1](images/Animated1.gif)
-
+![Animated1](images/Screencast.gif)
 
 ## Getting Started
 
@@ -65,6 +64,7 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduc
 ## Authors
 
 * **Xing Han Lu** - *Initial Work* - [@xhlulu](https://github.com/xhlulu)
+* **Yi Cao** - *Restyle* - [@ycaokris](https://github.com/ycaokris)
 
 See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
 
@@ -72,11 +72,6 @@ See also the list of [contributors](https://github.com/your/project/contributors
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
-## Acknowledgments
-
 ## Screenshots
 ![Screenshot1](images/Screenshot1.png)
-
 ![Screenshot2](images/Screenshot2.png)
-
-![Screenshot3](images/Screenshot3.png)
