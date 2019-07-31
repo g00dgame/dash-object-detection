@@ -220,20 +220,20 @@ app.layout = html.Div(
                         ),
 
                         html.Div(
-                            className='control-element',
+                           className='control-element',
                             children=[
-                                html.Div(children=["Graph View Mode:"], style={'width': '40%'}),
-                                dcc.Dropdown(
-                                    id="dropdown-graph-view-mode",
-                                    options=[
-                                        {'label': 'Visual Mode', 'value': 'visual'},
-                                        {'label': 'Detection Mode', 'value': 'detection'}
-                                    ],
-                                    value='visual',
-                                    searchable=False,
-                                    clearable=False,
-                                    style={'width': '60%'}
-                                )
+                               html.Div(children=["Graph View Mode:"], style={'width': '40%'}),
+                               dcc.Dropdown(
+                                   id="dropdown-graph-view-mode",
+                                   options=[
+                                       {'label': 'Visual Mode', 'value': 'visual'},
+#                                       {'label': 'Detection Mode', 'value': 'detection'}
+                                   ],
+                                   value='visual',
+                                   searchable=False,
+                                   clearable=False,
+                                   style={'width': '60%'}
+                              )
                             ]
                         )
                     ]
@@ -330,10 +330,14 @@ def update_output(dropdown_value):
                            className='plot-title'),
                     dcc.Graph(
                         id="pie-object-count",
-                        style={'height': '40vh', 'width': '100%'}
+                        style={'height': '40vh', 'width': '100%'}),
+		    html.P(children="Detection Score of Most Probable Objects",
+                           className='plot-title'),
+                    dcc.Graph(
+                        id="bar-score-graph",
+                        style={'height': '55vh'}
                     )
-
-                ]
+                 ]
             )
         ]
     else:
@@ -367,7 +371,7 @@ def update_detection_mode(value):
 
 # Updating Figures
 @app.callback(Output("bar-score-graph", "figure"),
-              [Input("interval-detection-mode", "n_intervals")],
+              [Input("interval-visual-mode", "n_intervals")],
               [State("video-display", "currentTime"),
                State('dropdown-footage-selection', 'value'),
                State('slider-minimum-confidence-threshold', 'value')])
@@ -443,7 +447,7 @@ def update_score_bar(n, current_time, footage, threshold):
                State('slider-minimum-confidence-threshold', 'value')])
 def update_object_count_pie(n, current_time, footage, threshold):
     layout = go.Layout(
-        showlegend=True,
+        showlegend=False,
         paper_bgcolor='rgb(249,249,249)',
         plot_bgcolor='rgb(249,249,249)',
         autosize=False,
