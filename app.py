@@ -11,7 +11,7 @@ from dash.dependencies import Input, Output, State
 
 
 DEBUG = True
-FRAMERATE = 24.0
+FRAMERATE = 6.0
 
 app = dash.Dash(__name__)
 server = app.server
@@ -27,6 +27,7 @@ def load_data(path):
     rounded."""
 
     # Load the dataframe containing all the processed object detections inside the video
+    print(path)
     video_info_df = pd.read_csv(path)
 
     # The list of classes, and the number of classes
@@ -190,18 +191,10 @@ app.layout = html.Div(
                                 dcc.Dropdown(
                                     id="dropdown-footage-selection",
                                     options=[
-                                        {'label': 'Drone recording of canal festival',
-                                         'value': 'DroneCanalFestival'},
-                                        {'label': 'Drone recording of car festival', 'value': 'car_show_drone'},
-                                        {'label': 'Drone recording of car festival #2',
-                                         'value': 'DroneCarFestival2'},
-                                        {'label': 'Drone recording of a farm', 'value': 'FarmDrone'},
-                                        {'label': 'Lion fighting Zebras', 'value': 'zebra'},
-                                        {'label': 'Man caught by a CCTV', 'value': 'ManCCTV'},
-                                        {'label': 'Man driving expensive car', 'value': 'car_footage'},
-                                        {'label': 'Restaurant Robbery', 'value': 'RestaurantHoldup'}
+                                        {'label': '24.mp4',
+                                         'value': '24.mp4'},
                                     ],
-                                    value='car_show_drone',
+                                    value='24.mp4',
                                     clearable=False,
                                     style={'width': '60%'}
                                 )
@@ -281,40 +274,16 @@ def load_all_footage():
 
     # Load the dictionary containing all the variables needed for analysis
     data_dict = {
-        'james_bond': load_data("data/james_bond_object_data.csv"),
-        'zebra': load_data("data/Zebra_object_data.csv"),
-        'car_show_drone': load_data("data/CarShowDrone_object_data.csv"),
-        'car_footage': load_data("data/CarFootage_object_data.csv"),
-        'DroneCanalFestival': load_data("data/DroneCanalFestivalDetectionData.csv"),
-        'DroneCarFestival2': load_data("data/DroneCarFestival2DetectionData.csv"),
-        'FarmDrone': load_data("data/FarmDroneDetectionData.csv"),
-        'ManCCTV': load_data("data/ManCCTVDetectionData.csv"),
-        'RestaurantHoldup': load_data("data/RestaurantHoldupDetectionData.csv")
+        '24.mp4': load_data('http://13.94.234.202:8765/data/csv/24.csv')
     }
 
     url_dict = {
         'regular': {
-            'james_bond': 'https://www.youtube.com/watch?v=g9S5GndUhko',
-            'zebra': 'https://www.youtube.com/watch?v=TVvtD3AVt10',
-            'car_show_drone': 'https://www.youtube.com/watch?v=gPtn6hD7o8g',
-            'car_footage': 'https://www.youtube.com/watch?v=qX3bDxHuq6I',
-            'DroneCanalFestival': 'https://youtu.be/0oucTt2OW7M',
-            'DroneCarFestival2': 'https://youtu.be/vhJ7MHsJvwY',
-            'FarmDrone': 'https://youtu.be/aXfKuaP8v_A',
-            'ManCCTV': 'https://youtu.be/BYZORBIxgbc',
-            'RestaurantHoldup': 'https://youtu.be/WDin4qqgpac',
+            '24.mp4': 'http://13.94.234.202:8765/data/videos/24.mp4'
         },
 
         'bounding_box': {
-            'james_bond': 'https://www.youtube.com/watch?v=g9S5GndUhko',
-            'zebra': 'https://www.youtube.com/watch?v=G2pbZgyWQ5E',
-            'car_show_drone': 'https://www.youtube.com/watch?v=9F5FdcVmLOY',
-            'car_footage': 'https://www.youtube.com/watch?v=EhnNosq1Lrc',
-            'DroneCanalFestival': 'https://youtu.be/6ZZmsnwk2HQ',
-            'DroneCarFestival2': 'https://youtu.be/2Gr4RQ-JHIs',
-            'FarmDrone': 'https://youtu.be/pvvW5yZlpyc',
-            'ManCCTV': 'https://youtu.be/1oMrHLrtOZw',
-            'RestaurantHoldup': 'https://youtu.be/HOIKOwixYEY',
+            '24.mp4': 'http://13.94.234.202:8765/data/detection/24_converted.mp4'
         }
     }
 
