@@ -84,19 +84,14 @@ def markdown_popup():
                         children=[dcc.Markdown(
                             children=dedent(
                                 '''
-                                ##### What am I looking at?
+                                ##### Краткое описание
                                 
-                                This app enhances visualization of objects detected using state-of-the-art Mobile Vision Neural Networks.
-                                Most user generated videos are dynamic and fast-paced, which might be hard to interpret. A confidence
-                                heatmap stays consistent through the video and intuitively displays the model predictions. The pie chart
-                                lets you interpret how the object classes are divided, which is useful when analyzing videos with numerous
-                                and differing objects.
+                                 Дашборд предназначен для визуализации объектов, обнаруженных с помощью нейронных сетей.
+                                 Тепловая карта отображает прогнозы модели. 
+                                 Круговая диаграмма показывает, как разделяются классы объектов.
+                                 Столбчатая диграмма отражает вероятность принадлежности объекта к какому-либо классу. 
 
-                                ##### More about this dash app
-                                
-                                The purpose of this demo is to explore alternative visualization methods for Object Detection. Therefore,
-                                the visualizations, predictions and videos are not generated in real time, but done beforehand. To read
-                                more about it, please visit the [project repo](https://github.com/plotly/dash-object-detection).
+                                                             
 
                                 '''
                             ))
@@ -139,14 +134,13 @@ app.layout = html.Div(
                     id='header-section',
                     children=[
                         html.H4(
-                            'Object Detection Explorer'
+                            'Детектирование объектов ГПН'
                         ),
                         html.P(
-                            'To get started, select a footage you want to view, and choose the display mode (with or without'
-                            ' bounding boxes). Then, you can start playing the video, and the visualization will '
-                            'be displayed depending on the current time.'
+                            'Выберите видеоролик для просмотра и режим отображения(с ограничивающими рамками или без них). ' 
+                            ' При воспроизведении видео визуализация будет отображаться в зависимости от текущего времени.'
                         ),
-                        html.Button("Learn More", id="learn-more-button", n_clicks=0)
+                        html.Button("Описание", id="learn-more-button", n_clicks=0)
                     ]
                 ),
                 html.Div(
@@ -172,7 +166,7 @@ app.layout = html.Div(
                         html.Div(
                             className='control-element',
                             children=[
-                                html.Div(children=["Minimum Confidence Threshold:"], style={'width': '40%'}),
+                                html.Div(children=["Доверительный порог:"], style={'width': '40%'}),
                                 html.Div(dcc.Slider(
                                     id='slider-minimum-confidence-threshold',
                                     min=20,
@@ -187,11 +181,11 @@ app.layout = html.Div(
                         html.Div(
                             className='control-element',
                             children=[
-                                html.Div(children=["Footage Selection:"], style={'width': '40%'}),
+                                html.Div(children=["Выбор видео:"], style={'width': '40%'}),
                                 dcc.Dropdown(
                                     id="dropdown-footage-selection",
                                     options=[
-                                        {'label': '24.mp4',
+                                        {'label': 'Склад1_каски_перчатки',
                                          'value': '24.mp4'},
                                     ],
                                     value='24.mp4',
@@ -204,12 +198,12 @@ app.layout = html.Div(
                         html.Div(
                             className='control-element',
                             children=[
-                                html.Div(children=["Video Display Mode:"], style={'width': '40%'}),
+                                html.Div(children=["Режим воспроизведения:"], style={'width': '40%'}),
                                 dcc.Dropdown(
                                     id="dropdown-video-display-mode",
                                     options=[
-                                        {'label': 'Regular Display', 'value': 'regular'},
-                                        {'label': 'Display with Bounding Boxes', 'value': 'bounding_box'},
+                                        {'label': 'Обычный', 'value': 'regular'},
+                                        {'label': 'Рамочный', 'value': 'bounding_box'},
                                     ],
                                     value='bounding_box',
                                     searchable=False,
@@ -222,12 +216,12 @@ app.layout = html.Div(
                         html.Div(
                            className='control-element',
                             children=[
-                               html.Div(children=["Graph View Mode:"], style={'width': '40%'}),
+                               html.Div(children=["Режим просмотра"], style={'width': '40%'}),
                                dcc.Dropdown(
                                    id="dropdown-graph-view-mode",
                                    options=[
-                                       {'label': 'Visual Mode', 'value': 'visual'},
-#                                       {'label': 'Detection Mode', 'value': 'detection'}
+                                       {'label': 'Визуальный', 'value': 'visual'},
+                                       {'label': 'Тестируемый', 'value': 'detection'}
                                    ],
                                    value='visual',
                                    searchable=False,
@@ -252,12 +246,7 @@ app.layout = html.Div(
                 'flexDirection': 'column'
             },
             children=[
-                html.Div(
-                    className='img-container',
-                    children=html.Img(
-                        style={'height': '100%', 'margin': '2px'},
-                        src="https://s3-us-west-1.amazonaws.com/plotly-tutorials/logo/new-branding/dash-logo-by-plotly-stripe.png")
-                ),
+                
                 html.Div(id="div-visual-mode"),
                 html.Div(id="div-detection-mode")
             ]
@@ -320,18 +309,18 @@ def update_output(dropdown_value):
             ),
             html.Div(
                 children=[
-                    html.P(children="Confidence Level of Object Presence",
+                    html.P(children="Категория обнаруженных объектов",
                            className='plot-title'),
                     dcc.Graph(
                         id="heatmap-confidence",
                         style={'height': '45vh', 'width': '100%'}),
 
-                    html.P(children="Object Count",
+                    html.P(children="Количество объектов",
                            className='plot-title'),
                     dcc.Graph(
                         id="pie-object-count",
                         style={'height': '40vh', 'width': '100%'}),
-		    html.P(children="Detection Score of Most Probable Objects",
+		    html.P(children="Вероятность обнаруженных объектов",
                            className='plot-title'),
                     dcc.Graph(
                         id="bar-score-graph",
@@ -344,29 +333,29 @@ def update_output(dropdown_value):
         return []
 
 
-@app.callback(Output("div-detection-mode", "children"),
-              [Input("dropdown-graph-view-mode", "value")])
-def update_detection_mode(value):
-    if value == "detection":
-        return [
-            dcc.Interval(
-                id="interval-detection-mode",
-                interval=700,
-                n_intervals=0
-            ),
-            html.Div(
-                children=[
-                    html.P(children="Detection Score of Most Probable Objects",
-                           className='plot-title'),
-                    dcc.Graph(
-                        id="bar-score-graph",
-                        style={'height': '55vh'}
-                    )
-                ]
-            )
-        ]
-    else:
-        return []
+#@app.callback(Output("div-detection-mode", "children"),
+#             [Input("dropdown-graph-view-mode", "value")])
+#ef update_detection_mode(value):
+#   if value == "detection":
+#       return [
+#           dcc.Interval(
+#               id="interval-detection-mode",
+#               interval=700,
+#               n_intervals=0
+#           ),
+#           html.Div(
+#               children=[
+#                   html.P(children="Detection Score of Most Probable Objects",
+#                          className='plot-title'),
+#                   dcc.Graph(
+#                       id="bar-score-graph",
+#                       style={'height': '55vh'}
+#                   )
+#               ]
+#           )
+#       ]
+#   else:
+#       return []
 
 
 # Updating Figures
