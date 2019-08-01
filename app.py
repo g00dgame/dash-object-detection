@@ -187,6 +187,8 @@ app.layout = html.Div(
                                     options=[
                                         {'label': 'Склад1_каски_перчатки',
                                          'value': '24.mp4'},
+                                        {'label': 'Склад2_каски_перчатки',
+                                         'value': 'video2.mp4'},
                                     ],
                                     value='24.mp4',
                                     clearable=False,
@@ -263,16 +265,19 @@ def load_all_footage():
 
     # Load the dictionary containing all the variables needed for analysis
     data_dict = {
-        '24.mp4': load_data('http://13.94.234.202:8765/data/csv/24.csv')
+        '24.mp4': load_data('http://13.94.234.202:8765/data/csv/24.csv'),
+        'video2.mp4': load_data('http://13.94.234.202:8765/data/csv/video2.csv')
     }
 
     url_dict = {
         'regular': {
-            '24.mp4': 'http://13.94.234.202:8765/data/videos/24.mp4'
+            '24.mp4': 'http://13.94.234.202:8765/data/videos/24.mp4',
+            'video2.mp4': 'http://13.94.234.202:8765/data/videos/video2.mp4'
         },
 
         'bounding_box': {
-            '24.mp4': 'http://13.94.234.202:8765/data/detection/24_converted.mp4'
+            '24.mp4': 'http://13.94.234.202:8765/data/detection/24_converted.mp4',
+            'video2.mp4': 'http://13.94.234.202:8765/data/detection/video2_converted.mp4'
         }
     }
 
